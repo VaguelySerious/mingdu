@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <circle cx="175" cy="195" r="140" fill="white" />
+  <text x="50" y="250" font-size="200" fill="#4DA167">人</text>
+  <text x="90" y="280" font-family="Arial" font-size="200" fill="#202A25">工</text>
+</svg>
