@@ -1,15 +1,13 @@
 import { BlockType } from "@/types/block";
 
 const blockPrefixes: Record<BlockType["type"], string> = {
-  story: "I was given the following story to read",
+  story: "I was given the following story to read and discuss with my tutor",
   task: "And this question to answer",
   user_answer: "To which I answered",
   user_question: "I asked this for clarification",
-  ai_answer: "And got the following answer",
+  ai_answer: "And my tutor responded with",
   // Not mapped
   system: "",
-  ai_correction: "",
-  ai_natural_correction: "",
 };
 
 /**

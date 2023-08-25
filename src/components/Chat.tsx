@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { doFetch } from "../logic/do-fetch";
+import { jsonFetch } from "../logic/do-fetch";
 import { Block } from "./Block";
 import { BlockType } from "@/types/block";
 

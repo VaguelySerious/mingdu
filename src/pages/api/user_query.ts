@@ -15,15 +15,6 @@ const modelApi = new ChatGPTAPI({
   },
 });
 
-type Data =
-  | {
-      error: string;
-    }
-  | {
-      text: string;
-      id: string;
-    };
-
 const correctionPromptFromConversation = (
   conversation: string,
   query: string,
@@ -63,7 +54,7 @@ If it already sounds correct and natural, please just respond with "一定很自
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<string>
 ) {
   if (
     !req.query ||
@@ -72,7 +63,7 @@ export default async function handler(
     typeof req.query.level !== "string" ||
     typeof req.query.naturality !== "string"
   ) {
-    return res.status(400).json({ error: "Bad Request" });
+    return res.status(400).json("Bad Request");
   }
 
   try {
@@ -93,9 +84,9 @@ export default async function handler(
       systemMessage,
     });
 
-    return res.status(200).json({ text: data.text, id: data.id });
+    return res.status(200).json(data.text);
   } catch (e: any) {
     console.error(e);
-    return res.status(500).json({ error: e.message });
+    return res.status(500).json(e.message);
   }
 }
