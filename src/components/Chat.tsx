@@ -1,23 +1,46 @@
-import { useState } from "react";
-import { jsonFetch } from "../logic/do-fetch";
-import { Block } from "./Block";
+import { Suspense, lazy, useContext } from "react";
 import { BlockType } from "@/types/block";
+import { DictContext } from "@/logic/dictionary";
+import dynamic from "next/dynamic";
 
-export const Chat = ({
+const Block = lazy(() => import("./Block"));
+
+const _Chat = ({
   blocks,
   isLoading,
 }: {
   blocks: BlockType[];
   isLoading: boolean;
 }) => {
+  const dictData = useContext(DictContext);
+
+  if (!dictData) {
+    return (
+      <div id="chat-window" className="chat">
+        <Suspense fallback={<div>Loading...</div>}>
+          <Block
+            block={{
+              type: "system",
+              loading: true,
+              text: "Loading Dictionary Data",
+            }}
+          />
+        </Suspense>
+      </div>
+    );
+  }
+
   return (
     <div id="chat-window" className="chat">
       {blocks.map((block, i) => (
-        <Block key={i} block={block} />
+        <Suspense fallback={<div>Loading...</div>} key={i}>
+          <Block key={i} block={block} />
+        </Suspense>
       ))}
-      {isLoading && (
-        <div className="chat-block chat-block-loading">Loading...</div>
-      )}
     </div>
   );
 };
+
+export const Chat = dynamic(() => Promise.resolve(_Chat), {
+  ssr: false,
+});

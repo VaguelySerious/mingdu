@@ -5,7 +5,8 @@ import { blocksToModelInput } from "../logic/block-parser";
 import { Sidebar } from "@/components/Sidebar";
 import { ChatInput } from "@/components/ChatInput";
 import { BlockType } from "@/types/block";
-import { jsonFetch, streamFetch } from "@/logic/do-fetch";
+import { streamFetch } from "@/logic/do-fetch";
+import { DictContext, DictData, loadDictData } from "@/logic/dictionary";
 
 type ModelName = "gpt-3.5-turbo" | "gpt-4";
 
@@ -31,7 +32,6 @@ const defaultBlocks: BlockType[] = [
   {
     type: "task",
     text: `小明每天晚上都会做什么？`,
-    correction: "blabla",
   },
 ];
 
@@ -54,19 +54,37 @@ const scrollChatToBottom = () =>
  */
 
 export const App = () => {
-  useEffect(() => {
-    memory.load();
-  }, []);
   const [level, setLevel] = useState(2);
   const [model, setModel] = useState<ModelName>(defaultModel);
   const [blocks, setBlocks] = useState<BlockType[]>(defaultBlocks);
   const [isLoading, setLoading] = useState(false);
+  const [dictionaries, setDictionaries] = useState<DictData | null>(null);
+
+  useEffect(() => {
+    memory.load();
+    loadDictData().then((data) => setDictionaries(data));
+  }, []);
 
   const submitQuery = async (text: string) => {
+    let OPENAI_API_KEY;
+    try {
+      OPENAI_API_KEY = localStorage.getItem("OPENAI_API_KEY");
+    } catch (e) {}
+    if (!OPENAI_API_KEY) {
+      OPENAI_API_KEY = window.prompt(
+        "First time using the app: Enter your OpenAI API key. It will be saved in localStorage for further requests, and it won't be logged on the server. If in doubt, check source code at https://github.com/VaguelySerious/mingdu"
+      );
+      if (OPENAI_API_KEY) {
+        try {
+          localStorage.setItem("OPENAI_API_KEY", OPENAI_API_KEY);
+        } catch (e) {}
+      }
+    }
+
     setLoading(true);
     const userBlock: BlockType = { loading: true, text, type: "user_answer" };
     blocks.push(userBlock);
-    setBlocks(blocks);
+    setBlocks([...blocks]);
     scrollChatToBottom();
     let naturalityCorrection = "";
     let correctionBlock: BlockType = {
@@ -80,26 +98,30 @@ export const App = () => {
       `/api/user_query`,
       {
         level,
-        conversation: blocksToModelInput(blocks),
         query: text,
         naturality: "true",
+        model,
+      },
+      {
+        conversation: blocksToModelInput(blocks.slice(0, -1)),
+        OPENAI_API_KEY,
       },
       (str) => {
         naturalityCorrection += str;
-        const noopAnswer = "一定很自然";
+        const noopAnswer = "一定很自然。";
         const differsFromNoop =
           naturalityCorrection.length > noopAnswer.length ||
           naturalityCorrection !==
             noopAnswer.slice(0, naturalityCorrection.length);
         if (differsFromNoop) {
           userBlock.correction = naturalityCorrection;
-          setBlocks(blocks);
+          setBlocks([...blocks]);
         }
       }
     )
       .then(() => {
         userBlock.loading = false;
-        setBlocks(blocks);
+        setBlocks([...blocks]);
       })
       .catch((err) => {
         setBlocks([...blocks, { type: "system", text: String(err) }]);
@@ -110,33 +132,39 @@ export const App = () => {
       `/api/user_query`,
       {
         level,
-        conversation: blocksToModelInput(blocks),
         query: text,
         naturality: "false",
+        model,
+      },
+      {
+        conversation: blocksToModelInput(blocks.slice(0, -1)),
+        OPENAI_API_KEY,
       },
       (str) => {
         correctionBlock.text += str;
-        const noopAnswer = "正确";
+        const noopAnswer = "正确。";
         const differsFromNoop =
           correctionBlock.text.length > noopAnswer.length ||
           correctionBlock.text !==
             noopAnswer.slice(0, correctionBlock.text.length);
         if (differsFromNoop && !blocks.includes(correctionBlock)) {
           blocks.push(correctionBlock);
-          setBlocks(blocks);
+          setBlocks([...blocks]);
           scrollChatToBottom();
         } else if (differsFromNoop) {
-          setBlocks(blocks);
+          setBlocks([...blocks]);
         }
       }
     )
       .then(() => {
         correctionBlock.loading = false;
-        setBlocks(blocks);
+        setBlocks([...blocks]);
         // TODO If it's an answer to a user question, shouldn't mark item as completed
         if (correctionBlock.text === "正确") {
           userBlock.completed = true;
         }
+        userBlock.loading = false;
+        setLoading(false);
       })
       .catch((err) => {
         setBlocks([...blocks, { type: "system", text: String(err) }]);
@@ -152,28 +180,30 @@ export const App = () => {
   };
 
   const onAddQuestion = async () => {
-    // jsonFetch(`/api/new_story`, {}).then((res) => {
+    // jsonFetch(`/api/new_question`, {}).then((res) => {
     //   const data = res.data;
     // });
   };
 
   return (
-    <div className="page-container">
-      <Sidebar
-        level={level}
-        model={model}
-        onModelChange={(m) => setModel(m as ModelName)}
-        onLevelChange={(l) => setLevel(l)}
-      />
-      <div className="page-main">
-        <Chat blocks={blocks} isLoading={isLoading} />
-        <ChatInput
-          onAddStory={onAddStory}
-          onAddQuestion={onAddQuestion}
-          onSubmit={submitQuery}
-          isLoading={isLoading}
+    <DictContext.Provider value={dictionaries}>
+      <div className="page-container">
+        <Sidebar
+          level={level}
+          model={model}
+          onModelChange={(m) => setModel(m as ModelName)}
+          onLevelChange={(l) => setLevel(l)}
         />
+        <div className="page-main">
+          <Chat blocks={blocks} isLoading={isLoading} />
+          <ChatInput
+            onAddStory={onAddStory}
+            onAddQuestion={onAddQuestion}
+            onSubmit={submitQuery}
+            isLoading={isLoading}
+          />
+        </div>
       </div>
-    </div>
+    </DictContext.Provider>
   );
 };

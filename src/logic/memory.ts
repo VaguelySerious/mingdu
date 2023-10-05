@@ -1,38 +1,33 @@
+let memory: Record<string, number> = {};
+
 export const load = () => {
   try {
-    // @ts-ignore
-    JSON.parse(localStorage.getItem("memory"));
+    memory = JSON.parse(localStorage.getItem("memory") || "{}");
   } catch (error) {
     console.log(error);
-    // @ts-ignore
-    window.memory = {};
+    memory = {};
   }
 };
 
 export const save = () => {
   try {
-    // @ts-ignore
-    localStorage.setItem("memory", JSON.stringify(window.memory));
+    localStorage.setItem("memory", JSON.stringify(memory));
   } catch (error) {
     console.log(error);
   }
 };
 
-export const get = (key: string) => {
-  // @ts-ignore
-  return window.memory[key];
+export const get = (word: string) => {
+  return memory[word];
 };
 
-export const set = (key: string, value: string) => {
-  // @ts-ignore
-  window.memory[key] = value;
+export const set = (word: string, level: number) => {
+  memory[word] = level;
   save();
 };
 
-export const getForgottenItems = () => {
-  // @ts-ignore
-  return Object.keys(window.memory).filter((key) => {
-    // @ts-ignore
-    return window.memory[key].performance === 0;
+export const getByLevel = (level: number) => {
+  return Object.keys(memory).filter((key) => {
+    return memory[key] === level;
   });
 };

@@ -1,3 +1,8 @@
+import { DictContext } from "@/logic/dictionary";
+import Image from "next/image";
+import { useContext } from "react";
+import * as memory from "../logic/memory";
+
 const modelChoices = [
   {
     name: "GPT 3.5",
@@ -9,7 +14,7 @@ const modelChoices = [
   },
 ];
 
-const levelChoices = [1, 2, 3, 4, 5];
+const levelChoices = [1, 2, 3, 4, 5, 6];
 
 export const Sidebar = ({
   level,
@@ -22,27 +27,33 @@ export const Sidebar = ({
   onLevelChange: (n: number) => void;
   onModelChange: (m: string) => void;
 }) => {
+  const dictionaries = useContext(DictContext);
+  const markAllAsKnown = (level: number) => {
+    if (!dictionaries) return;
+    Object.entries(dictionaries.hskDict).forEach(([word, wordLevel]) => {
+      if (wordLevel === level) {
+        memory.set(word, 5);
+      }
+    });
+  };
   return (
     <div className="sidebar">
-      <div className="sidebar-logo">
+      <div className="sidebar-item sidebar-logo">
         <div className="sidebar-logo-text">MingDu</div>
-        <img width="64" height="64" src="/logo.png" alt="logo" />
+        <Image width="64" height="64" src="/logo.png" alt="logo" />
       </div>
-      <div className="sidebar-selectors">
+      <div className="sidebar-item sidebar-selectors">
         <div className="sidebar-selector select">
           <label htmlFor="levels">Level</label>
           <select
             name="levels"
             id="levels"
+            value={level}
             onChange={(e) => onLevelChange(parseInt(e.target.value))}
           >
             {levelChoices.map((choice) => {
               return (
-                <option
-                  key={`level-${choice}`}
-                  selected={level === choice}
-                  value={choice}
-                >
+                <option key={`level-${choice}`} value={choice}>
                   HSK {choice}
                 </option>
               );
@@ -55,14 +66,11 @@ export const Sidebar = ({
             name="models"
             id="models"
             onChange={(e) => onModelChange(e.target.value)}
+            value={model}
           >
             {modelChoices.map((choice) => {
               return (
-                <option
-                  key={`model-${choice.value}`}
-                  selected={model === choice.value}
-                  value={choice.value}
-                >
+                <option key={`model-${choice.value}`} value={choice.value}>
                   {choice.name}
                 </option>
               );
@@ -70,11 +78,22 @@ export const Sidebar = ({
           </select>
         </div>
       </div>
-      <div className="sidebar-stories">
+      <div className="sidebar-item sidebar-stories">
         <div className="selected">Story 1</div>
         <div>Story 2</div>
       </div>
-      <div className="sidebar-buttons">
+      <div className="sidebar-item sidebar-legend">
+        {levelChoices.map((choice) => (
+          <div
+            key={choice}
+            onClick={() => markAllAsKnown(choice)}
+            className={`level-${choice - 1}`}
+          >
+            HSK {choice}
+          </div>
+        ))}
+      </div>
+      <div className="sidebar-item sidebar-buttons">
         <button className="button">New Story</button>
         <button className="button">New Question</button>
       </div>

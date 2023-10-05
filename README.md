@@ -1,9 +1,9 @@
 # MingDu
 
-
 ## Docs
 
 [ChatGPT npm package](https://www.npmjs.com/package/chatgpt?activeTab=readme#usage---chatgptapi)
+
 ## Possible Sources
 
 [NPM chinese-lexicon](https://www.npmjs.com/package/chinese-lexicon)
@@ -12,3 +12,9 @@ ChineseGrammarWiki: [keywords to grammar](https://resources.allsetlearning.com/c
 ChineseGrammarWiki: [english to grammar](https://resources.allsetlearning.com/chinese/grammar/Translations)
 [Blog on words with different pinyin pronunciations](https://blog.tutorabcchinese.com/mandarin-chinese-learning-tips/chinese-characters-with-various-pronunciations)
 [ZEN machine learning model for word segregation](https://github.com/sinovation/ZEN/tree/master/examples)
+
+## TODO
+
+- Add HSK level to dictionary lookup
+- Fix "New story" and "new question" button
+-

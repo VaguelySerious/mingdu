@@ -1,7 +1,7 @@
 import { BlockType } from "@/types/block";
 
 const blockPrefixes: Record<BlockType["type"], string> = {
-  story: "I was given the following story to read and discuss with my tutor",
+  story: "I was given the following story to discuss",
   task: "And this question to answer",
   user_answer: "To which I answered",
   user_question: "I asked this for clarification",
@@ -17,9 +17,10 @@ export const blocksToModelInput = (blocks: BlockType[]) => {
   return blocks
     .map((block) => {
       if (blockPrefixes[block.type]) {
-        return `${blockPrefixes[block.type]}: ${block.text}\n\n`;
+        return `${blockPrefixes[block.type]}: ${block.text}`;
       }
       return null;
     })
-    .filter(Boolean);
+    .filter(Boolean)
+    .join("\n\n");
 };

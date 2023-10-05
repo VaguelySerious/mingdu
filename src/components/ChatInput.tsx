@@ -1,4 +1,9 @@
 import { useState } from "react";
+import dynamic from "next/dynamic";
+
+const MicInput = dynamic(() => import("./MicInput"), {
+  ssr: false,
+});
 
 export const ChatInput = ({
   onSubmit,
@@ -15,7 +20,7 @@ export const ChatInput = ({
   return (
     <div className="chat-input">
       <input
-        className="input"
+        className="input chat-input-text"
         type="text"
         name="main-input"
         id="main-input"
@@ -34,6 +39,7 @@ export const ChatInput = ({
           }
         }}
       ></input>
+      <MicInput onText={setText} />
     </div>
   );
 };
