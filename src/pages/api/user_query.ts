@@ -94,7 +94,6 @@ export default async function handler(
       messages,
       stream: true,
     });
-    console.log("Sending", req.body.OPENAI_API_KEY, messages);
     res.writeHead(200, {
       Connection: "keep-alive",
       "Content-Encoding": "none",
