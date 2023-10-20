@@ -12,6 +12,9 @@ type ModelName = "gpt-3.5-turbo" | "gpt-4";
 
 const defaultModel: ModelName = "gpt-3.5-turbo";
 
+const NATURALITY_NOOP_ANSWER = "一定很自然。";
+const CORRECTION_NOOP_ANSWER = "正确。";
+
 const defaultBlocks: BlockType[] = [
   // {
   //   type: "system",
@@ -53,6 +56,8 @@ const scrollChatToBottom = () =>
  * -
  */
 
+let OPENAI_API_KEY = "";
+
 export const App = () => {
   const [level, setLevel] = useState(2);
   const [model, setModel] = useState<ModelName>(defaultModel);
@@ -63,30 +68,18 @@ export const App = () => {
   useEffect(() => {
     memory.load();
     loadDictData().then((data) => setDictionaries(data));
+    OPENAI_API_KEY = memory.getOrPromptOpenAIKey();
   }, []);
 
   const submitQuery = async (text: string) => {
-    let OPENAI_API_KEY;
-    try {
-      OPENAI_API_KEY = localStorage.getItem("OPENAI_API_KEY");
-    } catch (e) {}
-    if (!OPENAI_API_KEY) {
-      OPENAI_API_KEY = window.prompt(
-        "First time using the app: Enter your OpenAI API key. It will be saved in localStorage for further requests, and it won't be logged on the server. If in doubt, check source code at https://github.com/VaguelySerious/mingdu"
-      );
-      if (OPENAI_API_KEY) {
-        try {
-          localStorage.setItem("OPENAI_API_KEY", OPENAI_API_KEY);
-        } catch (e) {}
-      }
-    }
-
     setLoading(true);
+    const conversation = blocksToModelInput(blocks);
     const userBlock: BlockType = { loading: true, text, type: "user_answer" };
     blocks.push(userBlock);
     setBlocks([...blocks]);
     scrollChatToBottom();
     let naturalityCorrection = "";
+    let differsFromCorrectionNoop = false;
     let correctionBlock: BlockType = {
       text: "",
       loading: true,
@@ -99,27 +92,24 @@ export const App = () => {
       {
         level,
         query: text,
-        naturality: "true",
+        type: "naturality",
         model,
       },
-      {
-        conversation: blocksToModelInput(blocks.slice(0, -1)),
-        OPENAI_API_KEY,
-      },
+      { conversation, OPENAI_API_KEY },
       (str) => {
         naturalityCorrection += str;
-        const noopAnswer = "一定很自然。";
-        const differsFromNoop =
-          naturalityCorrection.length > noopAnswer.length ||
+        const differsFromNaturalityNoop =
+          naturalityCorrection.length > NATURALITY_NOOP_ANSWER.length ||
           naturalityCorrection !==
-            noopAnswer.slice(0, naturalityCorrection.length);
-        if (differsFromNoop) {
+            NATURALITY_NOOP_ANSWER.slice(0, naturalityCorrection.length);
+        if (differsFromNaturalityNoop) {
           userBlock.correction = naturalityCorrection;
           setBlocks([...blocks]);
         }
       }
     )
       .then(() => {
+        console.log(`Naturality text: "${naturalityCorrection}"`);
         userBlock.loading = false;
         setBlocks([...blocks]);
       })
@@ -131,37 +121,35 @@ export const App = () => {
     const correctionRequest = streamFetch(
       `/api/user_query`,
       {
+        type: "correction",
         level,
         query: text,
-        naturality: "false",
         model,
       },
-      {
-        conversation: blocksToModelInput(blocks.slice(0, -1)),
-        OPENAI_API_KEY,
-      },
+      { conversation, OPENAI_API_KEY },
       (str) => {
         correctionBlock.text += str;
-        const noopAnswer = "正确。";
-        const differsFromNoop =
-          correctionBlock.text.length > noopAnswer.length ||
+        differsFromCorrectionNoop =
+          correctionBlock.text.length > CORRECTION_NOOP_ANSWER.length ||
           correctionBlock.text !==
-            noopAnswer.slice(0, correctionBlock.text.length);
-        if (differsFromNoop && !blocks.includes(correctionBlock)) {
-          blocks.push(correctionBlock);
-          setBlocks([...blocks]);
-          scrollChatToBottom();
-        } else if (differsFromNoop) {
+            CORRECTION_NOOP_ANSWER.slice(0, correctionBlock.text.length);
+        if (differsFromCorrectionNoop) {
+          if (!blocks.includes(correctionBlock)) {
+            blocks.push(correctionBlock);
+            scrollChatToBottom();
+          }
           setBlocks([...blocks]);
         }
       }
     )
       .then(() => {
+        console.log(`Correction text: "${correctionBlock.text}"`);
         correctionBlock.loading = false;
         setBlocks([...blocks]);
         // TODO If it's an answer to a user question, shouldn't mark item as completed
-        if (correctionBlock.text === "正确") {
+        if (!differsFromCorrectionNoop) {
           userBlock.completed = true;
+          onAddQuestion();
         }
         userBlock.loading = false;
         setLoading(false);
@@ -180,9 +168,26 @@ export const App = () => {
   };
 
   const onAddQuestion = async () => {
-    // jsonFetch(`/api/new_question`, {}).then((res) => {
-    //   const data = res.data;
-    // });
+    const questionBlock: BlockType = { loading: true, type: "task", text: "" };
+    const conversation = blocksToModelInput(
+      blocks[blocks.length - 1].type === "task" ? blocks.slice(-1) : blocks
+    );
+    const newQuestionRequest = streamFetch(
+      `/api/user_query`,
+      { type: "newQuestion", level, model },
+      { conversation, OPENAI_API_KEY },
+      (str) => {
+        questionBlock.text += str;
+        if (!blocks.includes(questionBlock)) {
+          blocks.push(questionBlock);
+          scrollChatToBottom();
+        }
+        setBlocks([...blocks]);
+      }
+    ).then(() => {
+      questionBlock.loading = false;
+      setBlocks([...blocks]);
+    });
   };
 
   return (
@@ -193,15 +198,12 @@ export const App = () => {
           model={model}
           onModelChange={(m) => setModel(m as ModelName)}
           onLevelChange={(l) => setLevel(l)}
+          onAddQuestion={onAddQuestion}
+          onAddStory={onAddStory}
         />
         <div className="page-main">
           <Chat blocks={blocks} isLoading={isLoading} />
-          <ChatInput
-            onAddStory={onAddStory}
-            onAddQuestion={onAddQuestion}
-            onSubmit={submitQuery}
-            isLoading={isLoading}
-          />
+          <ChatInput onSubmit={submitQuery} isLoading={isLoading} />
         </div>
       </div>
     </DictContext.Provider>

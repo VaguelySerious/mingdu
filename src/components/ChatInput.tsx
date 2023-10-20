@@ -7,13 +7,9 @@ const MicInput = dynamic(() => import("./MicInput"), {
 
 export const ChatInput = ({
   onSubmit,
-  onAddQuestion,
-  onAddStory,
   isLoading,
 }: {
   onSubmit: (str: string) => Promise<void>;
-  onAddQuestion: () => Promise<void>;
-  onAddStory: () => Promise<void>;
   isLoading: boolean;
 }) => {
   const [text, setText] = useState("");

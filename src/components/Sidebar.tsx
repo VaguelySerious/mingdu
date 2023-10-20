@@ -21,11 +21,15 @@ export const Sidebar = ({
   model,
   onLevelChange,
   onModelChange,
+  onAddQuestion,
+  onAddStory,
 }: {
   level: number;
   model: string;
   onLevelChange: (n: number) => void;
   onModelChange: (m: string) => void;
+  onAddQuestion: () => Promise<void>;
+  onAddStory: () => Promise<void>;
 }) => {
   const dictionaries = useContext(DictContext);
   const markAllAsKnown = (level: number) => {
@@ -94,8 +98,12 @@ export const Sidebar = ({
         ))}
       </div>
       <div className="sidebar-item sidebar-buttons">
-        <button className="button">New Story</button>
-        <button className="button">New Question</button>
+        <button className="button" onClick={onAddQuestion}>
+          New Question
+        </button>
+        {/* <button className="button" onClick={onAddStory}>
+          New Story
+        </button> */}
       </div>
     </div>
   );

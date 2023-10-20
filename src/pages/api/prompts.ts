@@ -1,16 +1,57 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { ChatGPTAPI } from "chatgpt";
-import dotenv from "dotenv";
-dotenv.config();
+export const correctionPromptFromConversation = (
+  conversation: string,
+  query: string,
+  level: number = 1,
+  useSimplifiedCharacters: boolean = true
+) => {
+  return `I'm currently studying Mandarin for HSK level ${level} using
+${useSimplifiedCharacters ? "simplified" : "traditional"} Chinese characters.
 
-type Data =
-  | {
-      error: string;
-    }
-  | {
-      text: string;
-      id: string;
-    };
+${conversation}
+
+To which I think the answer is: ${query}
+
+Correct my answer on this. Only speak in Mandarin.
+If it's already correct or mostly correct, only respond with "正确" and nothing else`;
+};
+
+export const naturalityPromptFromConversation = (
+  conversation: string,
+  query: string,
+  level: number = 1,
+  useSimplifiedCharacters: boolean = true
+) => {
+  return `I'm currently studying Mandarin for HSK level ${level} using
+${useSimplifiedCharacters ? "simplified" : "traditional"} Chinese characters.
+
+${conversation}
+
+In this context, consider the following sentence: ${query}
+
+Help me make it sound more natural.
+Please only speak in Mandarin and only respond with the more natural version.
+If it already sounds natural, respond with "一定很自然" and nothing else.
+Don't consider whether the sentence applies to the story, consider it in isolation.`;
+};
+
+export const newQuestionFromConversation = (
+  conversation: string,
+  level: number = 1,
+  useSimplifiedCharacters: boolean = true
+) => {
+  return `I'm currently studying Mandarin for HSK level ${level} using
+${useSimplifiedCharacters ? "simplified" : "traditional"} Chinese characters.
+
+${conversation}
+
+Can you come up with a new question to test my understanding of the story?
+Please only speak in Mandarin and only respond with the question, nothing else.`;
+};
+
+export const newStory = (
+  level: number = 1,
+  useSimplifiedCharacters: boolean = true
+) => {};
 
 // const getTutorPrefix = (
 //   level: number = 1,
@@ -39,12 +80,3 @@ type Data =
 //     .filter(Boolean)
 //     .join(" ");
 // };
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
-  if (!req.query) {
-    return res.status(400).json({ error: "Bad Request" });
-  }
-}

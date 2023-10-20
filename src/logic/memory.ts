@@ -31,3 +31,22 @@ export const getByLevel = (level: number) => {
     return memory[key] === level;
   });
 };
+
+export const getOrPromptOpenAIKey = () => {
+  let OPENAI_API_KEY = "";
+  try {
+    OPENAI_API_KEY = localStorage.getItem("OPENAI_API_KEY") || "";
+  } catch (e) {}
+  if (!OPENAI_API_KEY) {
+    OPENAI_API_KEY =
+      window.prompt(
+        "First time using the app: Enter your OpenAI API key. It will be saved in localStorage for further requests, and it won't be logged on the server. If in doubt, check source code at https://github.com/VaguelySerious/mingdu"
+      ) || "";
+    if (OPENAI_API_KEY) {
+      try {
+        localStorage.setItem("OPENAI_API_KEY", OPENAI_API_KEY);
+      } catch (e) {}
+    }
+  }
+  return OPENAI_API_KEY;
+};
