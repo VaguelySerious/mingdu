@@ -172,7 +172,7 @@ export const App = () => {
     const conversation = blocksToModelInput(
       blocks[blocks.length - 1].type === "task" ? blocks.slice(-1) : blocks
     );
-    const newQuestionRequest = streamFetch(
+    streamFetch(
       `/api/user_query`,
       { type: "newQuestion", level, model },
       { conversation, OPENAI_API_KEY },
@@ -187,6 +187,13 @@ export const App = () => {
     ).then(() => {
       questionBlock.loading = false;
       setBlocks([...blocks]);
+
+      if (
+        blocks.filter((b) => b.type === "user_answer" && b.completed === true)
+      ) {
+        // TODO Mark story as "practiced"
+        // TODO: Mark all words in the conversations as practiced.
+      }
     });
   };
 

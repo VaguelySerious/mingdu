@@ -57,12 +57,25 @@ main {
     flex: 1 1 90%;
     padding-top: 1rem;
     border-top: 1px solid gray;
-    > * {
+    .story {
       padding: 8px 1rem;
       cursor: pointer;
+      &:hover {
+        text-decoration: underline;
+      }
     }
     .selected {
       text-decoration: underline;
+    }
+    .new {
+      cursor: pointer;
+      padding: 0.5rem;
+      font-weight: 700;
+      text-align: center;
+      border: 1px solid #ddd;
+      &:hover {
+        background-color: #eee;
+      }
     }
   }
   &-buttons {
@@ -254,6 +267,7 @@ main {
   font-size: 14px;
   color: black;
   white-space: nowrap;
+  position: relative;
   z-index: 10;
 
   // ellipsis
@@ -275,6 +289,9 @@ main {
   &-pinyin {
     font-size: 16px;
     font-weight: 700;
+  }
+  &-hsk {
+    margin-left: 1rem;
   }
 
   &-translations {

@@ -48,25 +48,19 @@ export const HoverableWord = ({
   const [definitions, hskLevel] = lookup;
 
   const content = word;
-  // // If the word doesn't have an hsk level, we color the characters individually
-  // const content = hskLevel
-  //   ? word
-  //   : word.split("").map((c, i) => {
-  //       let characterLookup = dictionaries.hskDict[c];
-  //       if (!characterLookup) {
-  //         // If the individual character isn't in HSK, we classify it by the first combined HSK word that contains it
-  //         characterLookup = Math.min(
-  //           ...Object.keys(dictionaries.hskDict)
-  //             .filter((key) => key.includes(c))
-  //             .map((key) => dictionaries.hskDict[key])
-  //         );
-  //       }
-  //       return (
-  //         <span key={i} className={clsx(`level-${characterLookup || "none"}`)}>
-  //           {c}
-  //         </span>
-  //       );
-  //     });
+  // If the word doesn't have an hsk level, we display them for individual characters
+  // If an individual character isn't in HSK, we classify it by the first combined HSK word that contains it
+  const hskLevels = hskLevel
+    ? [hskLevel]
+    : word.split("").map(
+        (c, i) =>
+          dictionaries.hskDict[c] ||
+          Math.min(
+            ...Object.keys(dictionaries.hskDict)
+              .filter((key) => key.includes(c))
+              .map((key) => dictionaries.hskDict[key])
+          )
+      );
 
   return (
     <span
@@ -79,14 +73,19 @@ export const HoverableWord = ({
     >
       <Tooltip
         id={`${wordIndex}-${content}`}
-        style={{ backgroundColor: "white" }}
+        variant="light"
+        style={{ zIndex: 1 }}
+        opacity="1"
       >
         <div className="dict-tooltip">
           {definitions.map(([pinyin, translations], i) => (
             <div key={i} className="dict-tooltip-definition">
-              <div className="flex">
+              <div className="flex is-align-items-center">
                 <div className="dict-tooltip-word">{content}</div>
                 <div className="dict-tooltip-pinyin">{pinyin}</div>
+                <div className="dict-tooltip-hsk">
+                  {hskLevels.map((l) => `HSK ${l}`).join(" | ")}
+                </div>
               </div>
               {translations?.length && (
                 <div className="dict-tooltip-translations">
@@ -104,7 +103,12 @@ export const HoverableWord = ({
           ))}
         </div>
       </Tooltip>
-      <span data-tooltip-id={`${wordIndex}-${content}`}>{content}</span>
+      <span
+        data-tooltip-variant="light"
+        data-tooltip-id={`${wordIndex}-${content}`}
+      >
+        {content}
+      </span>
     </span>
   );
 };

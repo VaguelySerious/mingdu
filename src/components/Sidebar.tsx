@@ -83,8 +83,10 @@ export const Sidebar = ({
         </div>
       </div>
       <div className="sidebar-item sidebar-stories">
-        <div className="selected">Story 1</div>
-        <div>Story 2</div>
+        <div className="story selected">Story 1</div>
+        <div className="new" onClick={() => alert("Coming soon")}>
+          +
+        </div>
       </div>
       <div className="sidebar-item sidebar-legend">
         {levelChoices.map((choice) => (
@@ -101,9 +103,6 @@ export const Sidebar = ({
         <button className="button" onClick={onAddQuestion}>
           New Question
         </button>
-        {/* <button className="button" onClick={onAddStory}>
-          New Story
-        </button> */}
       </div>
     </div>
   );
