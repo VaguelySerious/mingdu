@@ -58,14 +58,29 @@ main {
     padding-top: 1rem;
     border-top: 1px solid gray;
     .story {
-      padding: 8px 1rem;
-      cursor: pointer;
-      &:hover {
-        text-decoration: underline;
+      margin: 8px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      &-text {
+        padding: 8px 16px 8px 0;
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+      &-delete {
+        cursor: pointer;
+        margin-left: 1rem;
+        padding: 0 0.5rem;
+        text-decoration: none;
+        border: 1px solid #ddd;
       }
     }
     .selected {
-      text-decoration: underline;
+      .story-text {
+        text-decoration: underline;
+      }
     }
     .new {
       cursor: pointer;
@@ -302,5 +317,14 @@ main {
     margin-right: 4px;
     padding-right: 4px;
     border-right: 1px solid gray;
+  }
+}
+
+.hoverable {
+  .revealed-on-hover {
+    display: none;
+  }
+  &:hover .revealed-on-hover {
+    display: block;
   }
 }

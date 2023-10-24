@@ -7,6 +7,7 @@ import {
   correctionPromptFromConversation,
   naturalityPromptFromConversation,
   newQuestionFromConversation,
+  newStoryFromVocabulary,
 } from "./prompts";
 dotenv.config();
 
@@ -43,7 +44,9 @@ const QUERY_TYPE_TO_MESSAGE: Record<string, (req: NextApiRequest) => string> = {
       Number(req.query.level)
     );
   },
-  // newStory: (req) => {},
+  newStory: (req) => {
+    return newStoryFromVocabulary(Number(req.query.level));
+  },
 };
 
 export default async function handler(
@@ -97,7 +100,6 @@ export default async function handler(
       "Content-Type": "text/event-stream",
     });
     for await (const part of openAiStream) {
-      console.log("Part", part.choices[0]?.delta?.content || "");
       res.write(part.choices[0]?.delta?.content || "");
     }
     res.end();

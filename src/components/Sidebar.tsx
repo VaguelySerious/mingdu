@@ -2,6 +2,8 @@ import { DictContext } from "@/logic/dictionary";
 import Image from "next/image";
 import { useContext } from "react";
 import * as memory from "../logic/memory";
+import { BlockType, StoryType } from "@/types/block";
+import clsx from "clsx";
 
 const modelChoices = [
   {
@@ -14,20 +16,28 @@ const modelChoices = [
   },
 ];
 
-const levelChoices = [1, 2, 3, 4, 5, 6];
+const levelChoices = [3, 4, 5, 6];
 
 export const Sidebar = ({
   level,
   model,
+  stories,
+  blocks,
   onLevelChange,
   onModelChange,
+  onStoryChange,
   onAddQuestion,
   onAddStory,
+  onDeleteStory,
 }: {
   level: number;
   model: string;
+  stories: StoryType[];
+  blocks: BlockType[];
   onLevelChange: (n: number) => void;
   onModelChange: (m: string) => void;
+  onStoryChange: (si: number) => void;
+  onDeleteStory: (si: number) => void;
   onAddQuestion: () => Promise<void>;
   onAddStory: () => Promise<void>;
 }) => {
@@ -83,8 +93,26 @@ export const Sidebar = ({
         </div>
       </div>
       <div className="sidebar-item sidebar-stories">
-        <div className="story selected">Story 1</div>
-        <div className="new" onClick={() => alert("Coming soon")}>
+        {stories.map((story, i) => (
+          <div
+            key={story.id}
+            className={clsx(
+              "story hoverable",
+              story.blocks === blocks && "selected"
+            )}
+          >
+            <div className="story-text" onClick={() => onStoryChange(i)}>
+              Story {i + 1}
+            </div>
+            <div
+              className="revealed-on-hover story-delete"
+              onClick={() => onDeleteStory(i)}
+            >
+              X
+            </div>
+          </div>
+        ))}
+        <div className="new" onClick={() => onAddStory()}>
           +
         </div>
       </div>

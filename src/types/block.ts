@@ -12,3 +12,8 @@ export interface BlockType {
     | "ai_answer"
     | "system";
 }
+
+export interface StoryType {
+  id: number;
+  blocks: BlockType[];
+}

@@ -50,3 +50,20 @@ export const getOrPromptOpenAIKey = () => {
   }
   return OPENAI_API_KEY;
 };
+
+export const setJson = (key: string, value: any) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getJson = (key: string) => {
+  try {
+    return JSON.parse(localStorage.getItem(key) || "null");
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

@@ -4,7 +4,7 @@ import * as memory from "../logic/memory";
 import { blocksToModelInput } from "../logic/block-parser";
 import { Sidebar } from "@/components/Sidebar";
 import { ChatInput } from "@/components/ChatInput";
-import { BlockType } from "@/types/block";
+import { BlockType, StoryType } from "@/types/block";
 import { streamFetch } from "@/logic/do-fetch";
 import { DictContext, DictData, loadDictData } from "@/logic/dictionary";
 
@@ -37,6 +37,7 @@ const defaultBlocks: BlockType[] = [
     text: `小明每天晚上都会做什么？`,
   },
 ];
+const defaultStory = { id: 0, blocks: defaultBlocks };
 
 const scrollChatToBottom = () =>
   setTimeout(() => {
@@ -59,17 +60,27 @@ const scrollChatToBottom = () =>
 let OPENAI_API_KEY = "";
 
 export const App = () => {
-  const [level, setLevel] = useState(2);
+  const [level, setLevel] = useState(3);
   const [model, setModel] = useState<ModelName>(defaultModel);
   const [blocks, setBlocks] = useState<BlockType[]>(defaultBlocks);
   const [isLoading, setLoading] = useState(false);
   const [dictionaries, setDictionaries] = useState<DictData | null>(null);
+  const [stories, setStories] = useState<StoryType[]>([]);
+
+  // TODO Fix issues with story blocks not being tracked well across things
 
   useEffect(() => {
     memory.load();
     loadDictData().then((data) => setDictionaries(data));
     OPENAI_API_KEY = memory.getOrPromptOpenAIKey();
+    const _stories = memory.getJson("stories") || [defaultStory];
+    setStories(_stories);
+    setBlocks(_stories[0].blocks);
   }, []);
+
+  useEffect(() => {
+    memory.setJson("stories", stories);
+  }, [stories]);
 
   const submitQuery = async (text: string) => {
     setLoading(true);
@@ -162,9 +173,26 @@ export const App = () => {
   };
 
   const onAddStory = async () => {
-    // jsonFetch(`/api/new_story`, {}).then((res) => {
-    //   const data = res.data;
-    // });
+    const newStoryId = stories.length;
+    const storyBlock: BlockType = { loading: true, type: "story", text: "" };
+    const newStory = { id: newStoryId, blocks: [storyBlock] };
+    const newStories = [...stories, newStory];
+    setStories(newStories);
+    setBlocks(newStory.blocks);
+
+    streamFetch(
+      `/api/user_query`,
+      { type: "newStory", level, model },
+      { OPENAI_API_KEY },
+      (str) => {
+        storyBlock.text += str;
+        setStories(newStories);
+      }
+    ).then(() => {
+      storyBlock.loading = false;
+      setStories(newStories);
+      onAddQuestion();
+    });
   };
 
   const onAddQuestion = async () => {
@@ -182,11 +210,11 @@ export const App = () => {
           blocks.push(questionBlock);
           scrollChatToBottom();
         }
-        setBlocks([...blocks]);
+        setStories([...stories]);
       }
     ).then(() => {
       questionBlock.loading = false;
-      setBlocks([...blocks]);
+      setStories([...stories]);
 
       if (
         blocks.filter((b) => b.type === "user_answer" && b.completed === true)
@@ -203,10 +231,14 @@ export const App = () => {
         <Sidebar
           level={level}
           model={model}
+          stories={stories}
+          blocks={blocks}
           onModelChange={(m) => setModel(m as ModelName)}
           onLevelChange={(l) => setLevel(l)}
+          onStoryChange={(si) => setBlocks(stories[si].blocks)}
           onAddQuestion={onAddQuestion}
           onAddStory={onAddStory}
+          onDeleteStory={(si) => setStories(stories.filter((_, i) => i !== si))}
         />
         <div className="page-main">
           <Chat blocks={blocks} isLoading={isLoading} />
