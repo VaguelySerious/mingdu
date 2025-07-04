@@ -3,11 +3,11 @@
 import { defaultModel, type modelID } from "@/ai/providers";
 import { useChat } from "@ai-sdk/react";
 import { useState } from "react";
-import { Textarea } from "./textarea";
-import { ProjectOverview } from "./project-overview";
-import { Messages } from "./messages";
-import { Header } from "./header";
 import { toast } from "sonner";
+import { Header } from "./header";
+import { InitialScreen } from "./initial-screen";
+import { Messages } from "./messages";
+import { Textarea } from "./textarea";
 
 export default function Chat() {
   const [selectedModel, setSelectedModel] = useState<modelID>(defaultModel);
@@ -22,7 +22,7 @@ export default function Chat() {
           error.message.length > 0
             ? error.message
             : "An error occured, please try again later.",
-          { position: "top-center", richColors: true },
+          { position: "top-center", richColors: true }
         );
       },
     });
@@ -34,7 +34,7 @@ export default function Chat() {
       <Header />
       {messages.length === 0 ? (
         <div className="max-w-xl mx-auto w-full">
-          <ProjectOverview />
+          <InitialScreen />
         </div>
       ) : (
         <Messages messages={messages} isLoading={isLoading} status={status} />

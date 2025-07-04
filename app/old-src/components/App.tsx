@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { Chat } from "../components/Chat";
-import * as memory from "../logic/memory";
-import { blocksToModelInput } from "../logic/block-parser";
-import { Sidebar } from "@/components/Sidebar";
 import { ChatInput } from "@/components/ChatInput";
-import { BlockType, StoryType } from "@/types/block";
-import { streamFetch } from "@/logic/do-fetch";
+import { Sidebar } from "@/components/Sidebar";
 import { DictContext, DictData, loadDictData } from "@/logic/dictionary";
+import { streamFetch } from "@/logic/do-fetch";
+import { BlockType, StoryType } from "@/types/block";
+import { useEffect, useState } from "react";
+import { blocksToModelInput } from "../logic/block-parser";
+import * as memory from "../logic/memory";
+import { Chat } from "./Chat";
 
 type ModelName = "gpt-3.5-turbo" | "gpt-4";
 
@@ -91,7 +91,7 @@ export const App = () => {
     scrollChatToBottom();
     let naturalityCorrection = "";
     let differsFromCorrectionNoop = false;
-    let correctionBlock: BlockType = {
+    const correctionBlock: BlockType = {
       text: "",
       loading: true,
       type: "ai_answer",

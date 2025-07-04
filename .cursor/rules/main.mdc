@@ -1,0 +1,29 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Be as concise and terse as possible, no platitudes. Treat me as an expert. After doing something, be super concise in explaining what you did.
+
+This project is MingDu, a Mandarin tutor app, built using NextJS + ShadCN + Tailwind. Some old code left over from a previous working prototype is in `app/old-src`. 
+
+Right now, we're at the start of the project, with only a basic chat interface defined, and in the process of proting the previous prototype to this project.
+
+After any interaction, document progress and codebase information in `.cursor/rules/memory.mdc`, written as rules, without asking for confirmation, in super terse format.
+
+## MingDu Core functionality
+- Chat interface with an LLM that acts as a language tutor, conversations stored in localStorage (TODO)
+- LLM calls return text chunked by words, and the app does a local dictionary lookup for every word to provide dictionary definitions on hover (TODO)
+- Local storage tracking of how often any word appeared on screen (counted first time it is returned by LLM and stored) (TODO)
+- Local storage tracking of how often any word was used in writing by user (counted when user message submitted) (TODO)
+- Coloring of words based on mastery (mix of appearance count + use count) (TODO)
+- User may ask the tutor about anything or direct as wished, otherwise tutor will default to asking the user about their day, etc. (TODO)
+- For every user message, two AI API requests are made in parallel:
+  - One conversing with the user like a friend, ignoring the user's mistakes and not acting as a tutor, unless the user asks specific questions about language use
+  - One correcting the user's language use to be more natural, responding in pairs of quotes of the user's writing and a revised version which uses correct grammar (TODO)
+  - Grammar corrections are displayed in a second line under the user's writing, only for the applicable snippets (TODO)
+## Dictionaries & Data sources
+For dictionaries, see (see `public/data/`). There's a Cedict copy (`cedict_ts.u8`) for dictionary entries, a `cedict.idx` file for lookups of character/word to line index of cedict, a list of common grammar-relevant words in `grammarKeywords.txt` that are can be used to index `https://resources.allsetlearning.com/chinese/grammar/<word>`.
+
+
+

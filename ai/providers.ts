@@ -1,12 +1,16 @@
-import { xai } from "@ai-sdk/xai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { customProvider } from "ai";
 
+const openAi = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 const languageModels = {
-  "grok-2-1212": xai("grok-2-1212"),
-  "grok-3": xai("grok-3-latest"),
-  "grok-3-fast": xai("grok-3-fast-latest"),
-  "grok-3-mini": xai("grok-3-mini-latest"),
-  "grok-3-mini-fast": xai("grok-3-mini-fast-latest"),
+  "gpt-4.1-nano": openAi("gpt-4.1-nano"),
+  "gpt-4.1-mini": openAi("gpt-4.1-mini"),
+  "gpt-4.1": openAi("gpt-4.1"),
+  "gpt-4o": openAi("gpt-4o"),
+  "gpt-4o-mini": openAi("gpt-4o-mini"),
 };
 
 export const model = customProvider({
@@ -17,4 +21,4 @@ export type modelID = keyof typeof languageModels;
 
 export const MODELS = Object.keys(languageModels);
 
-export const defaultModel: modelID = "grok-3-mini";
+export const defaultModel: modelID = "gpt-4.1-nano";

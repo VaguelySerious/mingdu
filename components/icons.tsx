@@ -1,26 +1,5 @@
 import Link from "next/link";
-import * as React from "react";
 import type { SVGProps } from "react";
-
-export const VercelIcon = ({ size = 17 }) => {
-  return (
-    <svg
-      height={size}
-      strokeLinejoin="round"
-      viewBox="0 0 16 16"
-      width={size}
-      style={{ color: "currentcolor" }}
-    >
-      <title>Vercel Icon</title>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M8 1L16 15H0L8 1Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-};
 
 export const SpinnerIcon = ({ size = 16 }: { size?: number }) => (
   <svg
@@ -124,17 +103,3 @@ export function StarButton() {
     </Link>
   );
 }
-
-export const XAiIcon = ({ size = 16 }) => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      height={size}
-      version="1.1"
-      viewBox="0 0 438.7 481.4"
-    >
-      <title>xAI Icon</title>
-      <path d="M355.5,155.1l8.3,326.4h66.6l8.3-445.2-83.2,118.8ZM438.7,0h-101.6l-159.4,227.6,50.8,72.5L438.7,0ZM0,481.4h101.6l50.8-72.5-50.8-72.5L0,481.4ZM0,155.1l228.5,326.4h101.6L101.6,155.1H0Z" />
-    </svg>
-  );
-};

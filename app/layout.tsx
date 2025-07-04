@@ -1,8 +1,8 @@
+import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
-import { Analytics } from "@vercel/analytics/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,9 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vercel x xAI Chatbot",
-  description:
-    "This starter project uses xAI with the AI SDK via the Vercel Marketplace",
+  title: "MingDu",
+  description: "Chinese language tutor from the future",
 };
 
 export default function RootLayout({
