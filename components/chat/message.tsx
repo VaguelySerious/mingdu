@@ -1,11 +1,10 @@
 "use client";
 
 import type { Message as TMessage } from "ai";
+import equal from "fast-deep-equal";
 import { AnimatePresence, motion } from "motion/react";
 import { memo, useCallback, useEffect, useState } from "react";
-import equal from "fast-deep-equal";
 
-import { Markdown } from "./markdown";
 import { cn } from "@/lib/utils";
 import {
   CheckCircle,
@@ -16,7 +15,8 @@ import {
   SparklesIcon,
   StopCircle,
 } from "lucide-react";
-import { SpinnerIcon } from "./icons";
+import { SpinnerIcon } from "../icons";
+import { Markdown } from "./markdown";
 
 interface ReasoningPart {
   type: "reasoning";
@@ -75,7 +75,7 @@ export function ReasoningMessagePart({
               "cursor-pointer rounded-full dark:hover:bg-zinc-800 hover:bg-zinc-200",
               {
                 "dark:bg-zinc-800 bg-zinc-200": isExpanded,
-              },
+              }
             )}
             onClick={() => {
               setIsExpanded(!isExpanded);
@@ -106,7 +106,7 @@ export function ReasoningMessagePart({
                 <Markdown key={detailIndex}>{detail.text}</Markdown>
               ) : (
                 "<redacted>"
-              ),
+              )
             )}
           </motion.div>
         )}
@@ -137,7 +137,7 @@ const PurePreviewMessage = ({
         <div
           className={cn(
             "flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl",
-            "group-data-[role=user]/message:w-fit",
+            "group-data-[role=user]/message:w-fit"
           )}
         >
           {message.role === "assistant" && (

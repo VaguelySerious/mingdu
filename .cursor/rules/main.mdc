@@ -22,6 +22,8 @@ After any interaction, document progress and codebase information in `.cursor/ru
   - One conversing with the user like a friend, ignoring the user's mistakes and not acting as a tutor, unless the user asks specific questions about language use
   - One correcting the user's language use to be more natural, responding in pairs of quotes of the user's writing and a revised version which uses correct grammar (TODO)
   - Grammar corrections are displayed in a second line under the user's writing, only for the applicable snippets (TODO)
+
+
 ## Dictionaries & Data sources
 For dictionaries, see (see `public/data/`). There's a Cedict copy (`cedict_ts.u8`) for dictionary entries, a `cedict.idx` file for lookups of character/word to line index of cedict, a list of common grammar-relevant words in `grammarKeywords.txt` that are can be used to index `https://resources.allsetlearning.com/chinese/grammar/<word>`.
 

@@ -1,3 +1,4 @@
+import { CHAT_SYSTEM_PROMPT } from "@/ai/prompts";
 import { model, type modelID } from "@/ai/providers";
 import { streamText, type UIMessage } from "ai";
 
@@ -12,8 +13,7 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: model.languageModel(selectedModel),
-    system:
-      "Please act as my persona Mandarin tutor. I'm studying for the HSK 4, but I want to mostly practice having natural written conversation, like I would over text with someone from China. I might ask you to do things, but also feel free to ask me questions and offer corrections.",
+    system: CHAT_SYSTEM_PROMPT,
     messages,
     // tools: {
     //   getWeather: weatherTool,

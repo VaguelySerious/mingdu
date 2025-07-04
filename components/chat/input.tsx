@@ -1,7 +1,5 @@
-import { modelID } from "@/ai/providers";
-import { Textarea as ShadcnTextarea } from "@/components/ui/textarea";
 import { ArrowUp } from "lucide-react";
-import { ModelPicker } from "./model-picker";
+import { Input as ShadcnInput } from "../ui/input";
 
 interface InputProps {
   input: string;
@@ -9,49 +7,29 @@ interface InputProps {
   isLoading: boolean;
   status: string;
   stop: () => void;
-  selectedModel: modelID;
-  setSelectedModel: (model: modelID) => void;
 }
 
-export const Textarea = ({
+export const Input = ({
   input,
   handleInputChange,
   isLoading,
   status,
   stop,
-  selectedModel,
-  setSelectedModel,
 }: InputProps) => {
   return (
-    <div className="relative w-full pt-4">
-      <ShadcnTextarea
-        className="resize-none bg-secondary w-full rounded-2xl pr-12 pt-4 pb-16"
+    <div className="relative w-full">
+      <ShadcnInput
+        className="bg-secondary py-6 w-full rounded-xl pr-12"
         value={input}
         autoFocus
         placeholder={"Say something..."}
-        // @ts-expect-error err
         onChange={handleInputChange}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            if (input.trim() && !isLoading) {
-              // @ts-expect-error err
-              const form = e.target.closest("form");
-              if (form) form.requestSubmit();
-            }
-          }
-        }}
       />
-      <ModelPicker
-        setSelectedModel={setSelectedModel}
-        selectedModel={selectedModel}
-      />
-
       {status === "streaming" || status === "submitted" ? (
         <button
           type="button"
           onClick={stop}
-          className="cursor-pointer absolute right-2 bottom-2 rounded-full p-2 bg-black hover:bg-zinc-800 disabled:bg-zinc-300 disabled:cursor-not-allowed transition-colors"
+          className="cursor-pointer absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 bg-black hover:bg-zinc-800 disabled:bg-zinc-300 disabled:cursor-not-allowed transition-colors"
         >
           <div className="animate-spin h-4 w-4">
             <svg className="h-4 w-4 text-white" viewBox="0 0 24 24">
@@ -76,7 +54,7 @@ export const Textarea = ({
         <button
           type="submit"
           disabled={isLoading || !input.trim()}
-          className="absolute right-2 bottom-2 rounded-full p-2 bg-black hover:bg-zinc-800 disabled:bg-zinc-300 disabled:dark:bg-zinc-700 dark:disabled:opacity-80 disabled:cursor-not-allowed transition-colors"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 bg-black hover:bg-zinc-800 disabled:bg-zinc-300 disabled:cursor-not-allowed transition-colors"
         >
           <ArrowUp className="h-4 w-4 text-white" />
         </button>
