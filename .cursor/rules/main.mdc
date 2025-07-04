@@ -5,7 +5,7 @@ alwaysApply: true
 ---
 Be as concise and terse as possible, no platitudes. Treat me as an expert. After doing something, be super concise in explaining what you did.
 
-This project is MingDu, a Mandarin tutor app, built using NextJS + ShadCN + Tailwind. Some old code left over from a previous working prototype is in `app/old-src`.
+This project is MingDu, a Mandarin tutor app, built using NextJS + ShadCN + Tailwind. Some old code left over from a previous working prototype is in `app/old-src`. To pull new ShadCN components, run `shadcn add <component>`.
 
 Right now, we're at the start of the project, with only a basic chat interface defined, and in the process of proting the previous prototype to this project.
 

@@ -6,7 +6,7 @@ import { type ConversationType } from "@/lib/types";
 import { useChat } from "@ai-sdk/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { InitialScreen } from "../layout/initial-screen";
+import { InitialScreen } from "../help/initial-screen";
 import { Sidebar } from "../sidebar/sidebar";
 import { Messages } from "./messages";
 import { Textarea } from "./textarea";
