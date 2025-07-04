@@ -105,8 +105,6 @@ export default function Chat() {
     }
   }, [conversationSwitched]);
 
-  // No longer auto-create conversations - they are created when user submits a message
-
   const isLoading = status === "streaming" || status === "submitted";
 
   return (

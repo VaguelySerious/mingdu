@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+For every change, include tests, and validate changes by running `yarn test`. Mock API responses.
