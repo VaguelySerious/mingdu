@@ -2,7 +2,7 @@
 
 import { defaultModel, type modelID } from "@/ai/providers";
 import { useConversationStorage } from "@/lib/hooks/use-conversation-storage";
-import { type Conversation } from "@/lib/types";
+import { type ConversationType } from "@/lib/types";
 import { useChat } from "@ai-sdk/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -60,7 +60,7 @@ export default function Chat() {
   const handleConversationSwitch = useCallback(
     (conversationId: string) => {
       const conversation = conversations.find(
-        (conv: Conversation) => conv.id === conversationId
+        (conv: ConversationType) => conv.id === conversationId
       );
       if (conversation) {
         setMessages(conversation.messages);
@@ -72,8 +72,10 @@ export default function Chat() {
 
   // Handle new conversation
   const handleNewConversation = useCallback(() => {
+    // Create a new conversation immediately
     createConversation();
     setMessages([]);
+    // Set conversationSwitched to prevent double-creation
     setConversationSwitched(true);
   }, [createConversation, setMessages]);
 
@@ -81,10 +83,11 @@ export default function Chat() {
   useEffect(() => {
     if (
       isLoaded &&
-      currentConversationId &&
       messages.length > 0 &&
+      currentConversationId &&
       !conversationSwitched
     ) {
+      // Update existing conversation
       updateConversationMessages(currentConversationId, messages);
     }
   }, [
@@ -102,12 +105,7 @@ export default function Chat() {
     }
   }, [conversationSwitched]);
 
-  // Create initial conversation if none exists
-  useEffect(() => {
-    if (isLoaded && !currentConversationId) {
-      createConversation();
-    }
-  }, [isLoaded, currentConversationId, createConversation]);
+  // No longer auto-create conversations - they are created when user submits a message
 
   const isLoading = status === "streaming" || status === "submitted";
 

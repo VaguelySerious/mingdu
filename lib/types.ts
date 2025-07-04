@@ -1,11 +1,11 @@
-import type { Message } from "ai";
+import type { Message as MessageType } from "ai";
 
-export interface Conversation {
+export interface ConversationType {
   id: string;
   title: string;
-  messages: Message[];
+  messages: MessageType[];
   createdAt: string;
   updatedAt: string;
 }
 
-export { type Message };
+export { type MessageType };

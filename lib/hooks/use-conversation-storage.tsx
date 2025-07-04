@@ -1,6 +1,9 @@
 "use client";
 
-import { type Conversation, type Message } from "@/lib/types";
+import {
+  type ConversationType,
+  type MessageType as Message,
+} from "@/lib/types";
 import { useCallback, useEffect, useState } from "react";
 
 const CONVERSATIONS_KEY = "mingdu-conversations";
@@ -8,7 +11,7 @@ const CURRENT_CONVERSATION_KEY = "mingdu-current-conversation";
 
 export function useConversationStorage() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState<ConversationType[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<
     string | null
   >(null);
@@ -20,7 +23,7 @@ export function useConversationStorage() {
       const currentId = localStorage.getItem(CURRENT_CONVERSATION_KEY);
 
       if (storedConversations) {
-        const parsed = JSON.parse(storedConversations) as Conversation[];
+        const parsed = JSON.parse(storedConversations) as ConversationType[];
         setConversations(parsed);
       }
 
@@ -34,7 +37,7 @@ export function useConversationStorage() {
   }, []);
 
   // Save conversations to localStorage
-  const saveConversations = useCallback((convs: Conversation[]) => {
+  const saveConversations = useCallback((convs: ConversationType[]) => {
     try {
       localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(convs));
     } catch (error) {
@@ -75,7 +78,7 @@ export function useConversationStorage() {
   const createConversation = useCallback((): string => {
     const id = Date.now().toString();
     const now = new Date().toISOString();
-    const newConversation: Conversation = {
+    const newConversation: ConversationType = {
       id,
       title: "New Conversation",
       messages: [],
@@ -130,8 +133,14 @@ export function useConversationStorage() {
     [saveCurrentConversationId]
   );
 
+  // Clear current conversation selection
+  const clearCurrentConversation = useCallback(() => {
+    setCurrentConversationId(null);
+    saveCurrentConversationId(null);
+  }, [saveCurrentConversationId]);
+
   // Get current conversation
-  const getCurrentConversation = useCallback((): Conversation | null => {
+  const getCurrentConversation = useCallback((): ConversationType | null => {
     if (!currentConversationId) return null;
     return (
       conversations.find((conv) => conv.id === currentConversationId) || null
@@ -172,6 +181,7 @@ export function useConversationStorage() {
     createConversation,
     updateConversationMessages,
     switchToConversation,
+    clearCurrentConversation,
     getCurrentConversation,
     deleteConversation,
   };

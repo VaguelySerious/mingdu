@@ -5,6 +5,16 @@ alwaysApply: false
 ---
 # MingDu Memory
 
+## Current Progress
+- Basic chat interface working with sidebar and conversation management
+- Messages component with proper markdown rendering
+- Conversation storage using localStorage
+- Model picker integration
+- Fixed sidebar highlighting and real-time updates
+  - New conversations created immediately on "New Chat" click
+  - Sidebar updates without page refresh
+  - Proper conversation highlighting
+
 ## Core Implementation Status
 - ✅ Basic NextJS + ShadCN + Tailwind setup complete
 - ✅ Chat interface with AI provider integration complete
@@ -16,6 +26,7 @@ alwaysApply: false
 - ✅ Conversation deletion from sidebar
 - ✅ Message count display in conversation list
 - ✅ Centralized types in lib/types.ts
+- ✅ Fixed new chat flow: "New Chat" clears selection, conversation created on message submit (fixed conversationSwitched flag blocking new conversation creation)
 - ⏳ Dictionary lookup system (TODO)
 - ⏳ Word frequency tracking (TODO)
 - ⏳ Grammar corrections (TODO)
@@ -30,6 +41,7 @@ alwaysApply: false
 - Sidebar navigation for conversation switching
 - All functions properly memoized with useCallback to prevent infinite re-renders
 - Types centralized in lib/types.ts for consistency
+- New chat flow: `clearCurrentConversation()` deselects current conversation, new conversation created on first message submission
 
 ## File Structure
 - `components/chat/chat.tsx` - Main chat component with conversation integration
