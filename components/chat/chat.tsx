@@ -2,7 +2,6 @@
 
 import { defaultModel, type modelID } from "@/ai/providers";
 import { useConversationStorage } from "@/lib/hooks/use-conversation-storage";
-import { type ConversationType } from "@/lib/types";
 import { useChat } from "@ai-sdk/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -56,24 +55,26 @@ export default function Chat() {
     },
   });
 
+  // Load messages when conversation changes
+  useEffect(() => {
+    if (isLoaded && currentConversationId && currentConversation) {
+      setMessages(currentConversation.messages);
+    }
+  }, [currentConversationId, currentConversation, isLoaded, setMessages]);
+
   // Handle conversation switching
   const handleConversationSwitch = useCallback(
-    (conversationId: string) => {
-      const conversation = conversations.find(
-        (conv: ConversationType) => conv.id === conversationId
-      );
-      if (conversation) {
-        setMessages(conversation.messages);
-        setConversationSwitched(true);
-      }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (_conversationId: string) => {
+      setConversationSwitched(true);
     },
-    [conversations, setMessages]
+    []
   );
 
   // Handle new conversation
   const handleNewConversation = useCallback(() => {
     // Create a new conversation immediately
-    createConversation();
+    createConversation([]);
     setMessages([]);
     // Set conversationSwitched to prevent double-creation
     setConversationSwitched(true);
@@ -81,14 +82,14 @@ export default function Chat() {
 
   // Save messages to conversation storage whenever they change
   useEffect(() => {
-    if (
-      isLoaded &&
-      messages.length > 0 &&
-      currentConversationId &&
-      !conversationSwitched
-    ) {
-      // Update existing conversation
-      updateConversationMessages(currentConversationId, messages);
+    if (isLoaded && messages.length > 0 && !conversationSwitched) {
+      if (currentConversationId) {
+        // Update existing conversation
+        updateConversationMessages(currentConversationId, messages);
+      } else {
+        // No current conversation, create a new one with the messages
+        createConversation(messages);
+      }
     }
   }, [
     messages,
@@ -96,6 +97,7 @@ export default function Chat() {
     currentConversationId,
     updateConversationMessages,
     conversationSwitched,
+    createConversation,
   ]);
 
   // Reset conversation switched flag
@@ -113,7 +115,10 @@ export default function Chat() {
         onConversationSwitch={handleConversationSwitch}
         onNewConversation={handleNewConversation}
       />
-      <div className="flex-1 flex flex-col justify-center">
+      <div
+        className="flex-1 flex flex-col justify-center"
+        key={currentConversationId}
+      >
         {messages.length === 0 ? (
           <div className="max-w-xl mx-auto w-full">
             <InitialScreen />

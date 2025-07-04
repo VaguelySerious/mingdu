@@ -1,13 +1,13 @@
-import type { Message as TMessage } from "ai";
-import { Message } from "./message";
 import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom";
+import type { Message as MessageType } from "ai";
+import { Message } from "./message";
 
 export const Messages = ({
   messages,
   isLoading,
   status,
 }: {
-  messages: TMessage[];
+  messages: MessageType[];
   isLoading: boolean;
   status: "error" | "submitted" | "streaming" | "ready";
 }) => {

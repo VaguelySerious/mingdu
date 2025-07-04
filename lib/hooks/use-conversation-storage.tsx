@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  type ConversationType,
-  type MessageType as Message,
-} from "@/lib/types";
+import { type ConversationType, type MessageType } from "@/lib/types";
 import { useCallback, useEffect, useState } from "react";
 
 const CONVERSATIONS_KEY = "mingdu-conversations";
@@ -59,7 +56,7 @@ export function useConversationStorage() {
   }, []);
 
   // Generate conversation title from first message
-  const generateTitle = useCallback((messages: Message[]): string => {
+  const generateTitle = useCallback((messages: MessageType[]): string => {
     if (messages.length === 0) return "New Conversation";
 
     const firstUserMessage = messages.find((m) => m.role === "user");
@@ -75,32 +72,38 @@ export function useConversationStorage() {
   }, []);
 
   // Create new conversation
-  const createConversation = useCallback((): string => {
-    const id = Date.now().toString();
-    const now = new Date().toISOString();
-    const newConversation: ConversationType = {
-      id,
-      title: "New Conversation",
-      messages: [],
-      createdAt: now,
-      updatedAt: now,
-    };
+  const createConversation = useCallback(
+    (initialMessages: MessageType[] = []): string => {
+      const id = Date.now().toString();
+      const now = new Date().toISOString();
+      const newConversation: ConversationType = {
+        id,
+        title:
+          initialMessages.length > 0
+            ? generateTitle(initialMessages)
+            : "New Conversation",
+        messages: initialMessages,
+        createdAt: now,
+        updatedAt: now,
+      };
 
-    setConversations((prev) => {
-      const updatedConversations = [newConversation, ...prev];
-      saveConversations(updatedConversations);
-      return updatedConversations;
-    });
+      setConversations((prev) => {
+        const updatedConversations = [newConversation, ...prev];
+        saveConversations(updatedConversations);
+        return updatedConversations;
+      });
 
-    setCurrentConversationId(id);
-    saveCurrentConversationId(id);
+      setCurrentConversationId(id);
+      saveCurrentConversationId(id);
 
-    return id;
-  }, [saveConversations, saveCurrentConversationId]);
+      return id;
+    },
+    [saveConversations, saveCurrentConversationId, generateTitle]
+  );
 
   // Update conversation messages
   const updateConversationMessages = useCallback(
-    (id: string, messages: Message[]) => {
+    (id: string, messages: MessageType[]) => {
       setConversations((prev) => {
         const updatedConversations = prev.map((conv) => {
           if (conv.id === id) {

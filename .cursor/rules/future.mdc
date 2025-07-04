@@ -8,4 +8,7 @@ alwaysApply: false
 - Prompts the AI to use at least some unknown words, and reminds users to not only use words that are already known (TODO)
 - Stats of how many words the user knows by HSK level (TODO)
 - Can mark all of a certain HSK level words + grammar as "known" at app start
+- Detect if user is using IME, and if not, enable local IME mode
+- On initial message, and then every ~5 messages, summarize conversations and give a new title. Hovering shows a one-paragraph description.
+
 
