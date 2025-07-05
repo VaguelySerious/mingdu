@@ -9,7 +9,7 @@ import { ConversationType } from "@/lib/types";
 interface SidebarProps {
   onNewConversation: () => void;
   conversations: ConversationType[];
-  currentConversation?: ConversationType;
+  currentConversation: ConversationType;
   switchToConversation: (conversationId: string) => void;
   deleteConversation: (conversationId: string) => void;
 }
@@ -56,6 +56,7 @@ export function Sidebar({
       {/* New Conversation Button */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-800">
         <Button
+          disabled={!currentConversation.messages.length}
           onClick={handleNewConversation}
           className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
         >
@@ -73,7 +74,7 @@ export function Sidebar({
               <Conversation
                 key={conversation.id}
                 conversation={conversation}
-                selected={currentConversation?.id === conversation.id}
+                selected={currentConversation.id === conversation.id}
                 canDelete={conversations.length > 1}
                 onClick={handleConversationClick}
                 onDelete={handleDeleteConversation}

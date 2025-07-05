@@ -15,12 +15,6 @@ export async function POST(req: Request) {
     model: model.languageModel(selectedModel),
     system: CHAT_SYSTEM_PROMPT,
     messages,
-    // tools: {
-    //   getWeather: weatherTool,
-    // },
-    experimental_telemetry: {
-      isEnabled: true,
-    },
   });
 
   return result.toDataStreamResponse({

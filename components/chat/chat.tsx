@@ -12,16 +12,16 @@ import { Textarea } from "./textarea";
 export default function Chat({
   isLoaded,
   conversation,
-  setConversationTitle,
   onMessageUpdate,
 }: {
   isLoaded: boolean;
   conversation: ConversationType;
-  setConversationTitle: (id: string, title: string) => void;
   onMessageUpdate: (id: string, messages: MessageType[]) => void;
 }) {
   const [selectedModel, setSelectedModel] = useState<modelID>(defaultModel);
-  const currentConversationId = conversation.id;
+  const [currentConversationId, setCurrentConversationId] = useState(
+    conversation.id
+  );
 
   const {
     messages,
@@ -32,10 +32,11 @@ export default function Chat({
     stop,
     setMessages,
   } = useChat({
-    maxSteps: 5,
-    initialMessages: isLoaded && conversation ? conversation.messages : [],
-    body: {
-      selectedModel,
+    initialMessages: isLoaded ? conversation.messages : [],
+    initialInput: isLoaded && !conversation.title ? "你怎么样？" : "",
+    body: { selectedModel },
+    onFinish: (message) => {
+      onMessageUpdate(currentConversationId, [...messages, message]);
     },
     onError: (error) => {
       toast.error(
@@ -47,33 +48,13 @@ export default function Chat({
     },
   });
 
-  // Force update messages when conversation changes
+  // When the conversation changes, we need to update the messages
   useEffect(() => {
-    setMessages(conversation?.messages || []);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentConversationId, setMessages]);
-
-  // When new messages are added, update the conversation
-  useEffect(() => {
-    if (messages.length > 0 && isLoaded && currentConversationId) {
-      onMessageUpdate(currentConversationId, messages);
-
-      // On the first message, we also set a title
-      if (!conversation?.title) {
-        setConversationTitle(
-          currentConversationId,
-          messages[0].content.slice(0, 20)
-        );
-      }
+    if (conversation.id !== currentConversationId) {
+      setMessages(conversation.messages);
+      setCurrentConversationId(conversation.id);
     }
-  }, [
-    messages,
-    isLoaded,
-    currentConversationId,
-    onMessageUpdate,
-    setConversationTitle,
-    conversation,
-  ]);
+  }, [conversation, currentConversationId, setMessages]);
 
   const isLoading = status === "streaming" || status === "submitted";
 
