@@ -1,34 +1,27 @@
 "use client";
 
 import { defaultModel, type modelID } from "@/ai/providers";
-import { useConversationStorage } from "@/lib/hooks/use-conversation-storage";
+import { ConversationType, MessageType } from "@/lib/types";
 import { useChat } from "@ai-sdk/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { InitialScreen } from "../help/initial-screen";
-import { Sidebar } from "../sidebar/sidebar";
 import { Messages } from "./messages";
 import { Textarea } from "./textarea";
 
-export default function Chat() {
+export default function Chat({
+  isLoaded,
+  conversation,
+  setConversationTitle,
+  onMessageUpdate,
+}: {
+  isLoaded: boolean;
+  conversation: ConversationType;
+  setConversationTitle: (id: string, title: string) => void;
+  onMessageUpdate: (id: string, messages: MessageType[]) => void;
+}) {
   const [selectedModel, setSelectedModel] = useState<modelID>(defaultModel);
-  const {
-    isLoaded,
-    conversations,
-    currentConversationId,
-    createConversation,
-    updateConversationMessages,
-  } = useConversationStorage();
-
-  const [conversationSwitched, setConversationSwitched] = useState(false);
-
-  // Memoize current conversation to prevent unnecessary re-renders
-  const currentConversation = useMemo(() => {
-    if (!currentConversationId) return null;
-    return (
-      conversations.find((conv) => conv.id === currentConversationId) || null
-    );
-  }, [currentConversationId, conversations]);
+  const currentConversationId = conversation.id;
 
   const {
     messages,
@@ -40,8 +33,7 @@ export default function Chat() {
     setMessages,
   } = useChat({
     maxSteps: 5,
-    initialMessages:
-      isLoaded && currentConversation ? currentConversation.messages : [],
+    initialMessages: isLoaded && conversation ? conversation.messages : [],
     body: {
       selectedModel,
     },
@@ -55,92 +47,62 @@ export default function Chat() {
     },
   });
 
-  // Load messages when conversation changes
+  // Force update messages when conversation changes
   useEffect(() => {
-    if (isLoaded && currentConversationId && currentConversation) {
-      setMessages(currentConversation.messages);
-    }
-  }, [currentConversationId, currentConversation, isLoaded, setMessages]);
+    setMessages(conversation?.messages || []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentConversationId, setMessages]);
 
-  // Handle conversation switching
-  const handleConversationSwitch = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (_conversationId: string) => {
-      setConversationSwitched(true);
-    },
-    []
-  );
-
-  // Handle new conversation
-  const handleNewConversation = useCallback(() => {
-    // Create a new conversation immediately
-    createConversation([]);
-    setMessages([]);
-    // Set conversationSwitched to prevent double-creation
-    setConversationSwitched(true);
-  }, [createConversation, setMessages]);
-
-  // Save messages to conversation storage whenever they change
+  // When new messages are added, update the conversation
   useEffect(() => {
-    if (isLoaded && messages.length > 0 && !conversationSwitched) {
-      if (currentConversationId) {
-        // Update existing conversation
-        updateConversationMessages(currentConversationId, messages);
-      } else {
-        // No current conversation, create a new one with the messages
-        createConversation(messages);
+    if (messages.length > 0 && isLoaded && currentConversationId) {
+      onMessageUpdate(currentConversationId, messages);
+
+      // On the first message, we also set a title
+      if (!conversation?.title) {
+        setConversationTitle(
+          currentConversationId,
+          messages[0].content.slice(0, 20)
+        );
       }
     }
   }, [
     messages,
     isLoaded,
     currentConversationId,
-    updateConversationMessages,
-    conversationSwitched,
-    createConversation,
+    onMessageUpdate,
+    setConversationTitle,
+    conversation,
   ]);
-
-  // Reset conversation switched flag
-  useEffect(() => {
-    if (conversationSwitched) {
-      setConversationSwitched(false);
-    }
-  }, [conversationSwitched]);
 
   const isLoading = status === "streaming" || status === "submitted";
 
   return (
-    <div className="h-dvh flex">
-      <Sidebar
-        onConversationSwitch={handleConversationSwitch}
-        onNewConversation={handleNewConversation}
-      />
-      <div
-        className="flex-1 flex flex-col justify-center"
-        key={currentConversationId}
+    <div
+      className="flex-1 flex flex-col justify-center"
+      key={currentConversationId}
+    >
+      {messages.length === 0 ? (
+        <div className="max-w-xl mx-auto w-full">
+          <InitialScreen />
+        </div>
+      ) : (
+        <Messages messages={messages} isLoading={isLoading} status={status} />
+      )}
+      <form
+        onSubmit={handleSubmit}
+        className="pb-8 bg-white dark:bg-black w-full max-w-xl mx-auto px-4 sm:px-0"
       >
-        {messages.length === 0 ? (
-          <div className="max-w-xl mx-auto w-full">
-            <InitialScreen />
-          </div>
-        ) : (
-          <Messages messages={messages} isLoading={isLoading} status={status} />
-        )}
-        <form
-          onSubmit={handleSubmit}
-          className="pb-8 bg-white dark:bg-black w-full max-w-xl mx-auto px-4 sm:px-0"
-        >
-          <Textarea
-            selectedModel={selectedModel}
-            setSelectedModel={setSelectedModel}
-            handleInputChange={handleInputChange}
-            input={input}
-            isLoading={isLoading}
-            status={status}
-            stop={stop}
-          />
-        </form>
-      </div>
+        <Textarea
+          selectedModel={selectedModel}
+          setSelectedModel={setSelectedModel}
+          handleInputChange={handleInputChange}
+          input={input}
+          isLoading={isLoading}
+          status={status}
+          stop={stop}
+        />
+      </form>
     </div>
   );
 }

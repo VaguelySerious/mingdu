@@ -1,10 +1,18 @@
 "use client";
 
 import { type ConversationType, type MessageType } from "@/lib/types";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const CONVERSATIONS_KEY = "mingdu-conversations";
 const CURRENT_CONVERSATION_KEY = "mingdu-current-conversation";
+
+const DEFAULT_CONVERSATION: ConversationType = {
+  id: "default",
+  title: null,
+  messages: [],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+};
 
 export function useConversationStorage() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -22,13 +30,16 @@ export function useConversationStorage() {
       if (storedConversations) {
         const parsed = JSON.parse(storedConversations) as ConversationType[];
         setConversations(parsed);
-      }
-
-      if (currentId) {
-        setCurrentConversationId(currentId);
+        if (currentId && parsed.find((c) => c.id === currentId)) {
+          setCurrentConversationId(currentId);
+        }
+      } else {
+        setConversations([DEFAULT_CONVERSATION]);
+        setCurrentConversationId(DEFAULT_CONVERSATION.id);
       }
     } catch (error) {
       console.error("Failed to load conversations from localStorage:", error);
+      setConversations([DEFAULT_CONVERSATION]);
     }
     setIsLoaded(true);
   }, []);
@@ -56,20 +67,23 @@ export function useConversationStorage() {
   }, []);
 
   // Generate conversation title from first message
-  const generateTitle = useCallback((messages: MessageType[]): string => {
-    if (messages.length === 0) return "New Conversation";
+  const generateConversationTitle = useCallback(
+    (messages: MessageType[]): string => {
+      if (messages.length === 0) return "New Conversation";
 
-    const firstUserMessage = messages.find((m) => m.role === "user");
-    if (firstUserMessage && firstUserMessage.content) {
-      const content =
-        typeof firstUserMessage.content === "string"
-          ? firstUserMessage.content
-          : String(firstUserMessage.content);
-      return content.slice(0, 50) + (content.length > 50 ? "..." : "");
-    }
+      const firstUserMessage = messages.find((m) => m.role === "user");
+      if (firstUserMessage && firstUserMessage.content) {
+        const content =
+          typeof firstUserMessage.content === "string"
+            ? firstUserMessage.content
+            : String(firstUserMessage.content);
+        return content.slice(0, 50) + (content.length > 50 ? "..." : "");
+      }
 
-    return "New Conversation";
-  }, []);
+      return "New Conversation";
+    },
+    []
+  );
 
   // Create new conversation
   const createConversation = useCallback(
@@ -78,10 +92,7 @@ export function useConversationStorage() {
       const now = new Date().toISOString();
       const newConversation: ConversationType = {
         id,
-        title:
-          initialMessages.length > 0
-            ? generateTitle(initialMessages)
-            : "New Conversation",
+        title: null,
         messages: initialMessages,
         createdAt: now,
         updatedAt: now,
@@ -92,13 +103,9 @@ export function useConversationStorage() {
         saveConversations(updatedConversations);
         return updatedConversations;
       });
-
-      setCurrentConversationId(id);
-      saveCurrentConversationId(id);
-
       return id;
     },
-    [saveConversations, saveCurrentConversationId, generateTitle]
+    [saveConversations]
   );
 
   // Update conversation messages
@@ -112,7 +119,7 @@ export function useConversationStorage() {
               messages,
               title:
                 conv.title === "New Conversation"
-                  ? generateTitle(messages)
+                  ? generateConversationTitle(messages)
                   : conv.title,
               updatedAt: new Date().toISOString(),
             };
@@ -124,7 +131,7 @@ export function useConversationStorage() {
         return updatedConversations;
       });
     },
-    [generateTitle, saveConversations]
+    [generateConversationTitle, saveConversations]
   );
 
   // Switch to conversation
@@ -141,14 +148,6 @@ export function useConversationStorage() {
     setCurrentConversationId(null);
     saveCurrentConversationId(null);
   }, [saveCurrentConversationId]);
-
-  // Get current conversation
-  const getCurrentConversation = useCallback((): ConversationType | null => {
-    if (!currentConversationId) return null;
-    return (
-      conversations.find((conv) => conv.id === currentConversationId) || null
-    );
-  }, [currentConversationId, conversations]);
 
   // Delete conversation
   const deleteConversation = useCallback(
@@ -177,15 +176,38 @@ export function useConversationStorage() {
     [currentConversationId, saveConversations, saveCurrentConversationId]
   );
 
+  const setConversationTitle = useCallback(
+    (id: string, title: string) => {
+      setConversations((prev) => {
+        const updatedConversations = prev.map((conv) => {
+          if (conv.id === id) {
+            return { ...conv, title };
+          }
+          return conv;
+        });
+
+        saveConversations(updatedConversations);
+        return updatedConversations;
+      });
+    },
+    [saveConversations]
+  );
+
+  const currentConversation = useMemo(() => {
+    return conversations.find((conv) => conv.id === currentConversationId);
+  }, [conversations, currentConversationId]);
+
   return {
     isLoaded,
     conversations,
     currentConversationId,
+    currentConversation,
+    setConversationTitle,
+    generateConversationTitle,
     createConversation,
     updateConversationMessages,
     switchToConversation,
     clearCurrentConversation,
-    getCurrentConversation,
     deleteConversation,
   };
 }
