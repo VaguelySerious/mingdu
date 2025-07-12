@@ -2,18 +2,16 @@
 
 import { chatRequest } from "@/ai/chat";
 import { sendSignal, SIGNAL_TOPICS } from "@/lib/hooks/use-signals";
-import { getOpenAIKey, promptForOpenAIKey } from "@/lib/openai";
 import { MessageType, useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
 import { CoreMessage as APIMessageType, generateId } from "ai";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { InitialScreen } from "../help/initial-screen";
 import { Messages } from "./messages";
 import { Textarea } from "./textarea";
 
 export default function Chat({ conversationId }: { conversationId: string }) {
   const selectedModelId = useChatStore((state) => state.selectedModelId);
-  const [keyLoaded, setKeyLoaded] = useState(getOpenAIKey());
 
   const messageIds = useChatStore(
     (state) => state.conversations[conversationId]?.messageIds ?? []
@@ -80,25 +78,6 @@ export default function Chat({ conversationId }: { conversationId: string }) {
     },
     [selectedModelId, conversationId, input, setQueryStatus, messageIds]
   );
-
-  useEffect(() => {
-    if (!keyLoaded) {
-      const key = promptForOpenAIKey();
-      if (key) {
-        setKeyLoaded(key);
-      }
-    }
-  }, [keyLoaded]);
-
-  if (!keyLoaded) {
-    return (
-      <main className="flex-1">
-        <div className="flex justify-center items-center h-full">
-          <div className="text-2xl font-bold">Loading...</div>
-        </div>
-      </main>
-    );
-  }
 
   return (
     <div className="flex-1 flex flex-col justify-center" key={conversationId}>

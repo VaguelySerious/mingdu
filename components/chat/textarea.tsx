@@ -1,7 +1,5 @@
 import { Textarea as ShadcnTextarea } from "@/components/ui/textarea";
-import { useChatStore } from "@/lib/store";
 import { ArrowUp } from "lucide-react";
-import { ModelPicker } from "../settings/model-picker";
 import { Spinner } from "../ui/spinner";
 
 interface InputProps {
@@ -17,8 +15,6 @@ export const Textarea = ({
   queryStatus,
   stop,
 }: InputProps) => {
-  const selectedModelId = useChatStore((state) => state.selectedModelId);
-  const setSelectedModelId = useChatStore((state) => state.setSelectedModelId);
   const isLoading = queryStatus === "streaming" || queryStatus === "submitted";
   return (
     <div className="relative w-full pt-4">
@@ -39,10 +35,6 @@ export const Textarea = ({
             }
           }
         }}
-      />
-      <ModelPicker
-        setSelectedModel={setSelectedModelId}
-        selectedModel={selectedModelId}
       />
 
       {status === "streaming" || status === "submitted" ? (

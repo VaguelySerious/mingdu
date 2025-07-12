@@ -3,7 +3,6 @@
 import { useChatStore } from "@/lib/store";
 import Chat from "./chat/chat";
 import { Sidebar } from "./sidebar/sidebar";
-import { NoSSR } from "./ui/no-ssr";
 
 export const Main = () => {
   const currentConversationId = useChatStore(
@@ -13,13 +12,11 @@ export const Main = () => {
   return (
     <div className="h-dvh flex">
       <Sidebar />
-      <NoSSR>
-        {currentConversationId && (
-          <main className="flex-1">
-            <Chat conversationId={currentConversationId} />
-          </main>
-        )}
-      </NoSSR>
+      {currentConversationId && (
+        <main className="flex-1">
+          <Chat conversationId={currentConversationId} />
+        </main>
+      )}
     </div>
   );
 };

@@ -1,6 +1,14 @@
-import { defaultModelId, ModelType } from "@/lib/openai";
+import { defaultModelId, ModelType } from "@/ai/provider";
 import { omit } from "lodash-es";
 import { create } from "zustand";
+
+export type ConversationType = {
+  id: string;
+  title: string;
+  createdAt: number;
+  updatedAt: number;
+  messageIds: string[];
+};
 
 export type MessageType = {
   id: string;
@@ -11,17 +19,20 @@ export type MessageType = {
   error?: string;
 };
 
-export type ConversationType = {
+export type CorrectionType = {
   id: string;
-  title: string;
+  messageId: string;
+  words: string[];
   createdAt: number;
-  updatedAt: number;
-  messageIds: string[];
+  isLoading?: boolean;
+  error?: string;
 };
 
 interface ChatState {
   conversations: Record<string, ConversationType>;
   messages: Record<string, MessageType>;
+  corrections: Record<string, CorrectionType>;
+
   currentConversationId: string | null;
   selectedModelId: ModelType;
 
@@ -29,7 +40,7 @@ interface ChatState {
   setSelectedModelId: (modelId: ModelType) => void;
   selectConversation: (id: string | null) => void;
 
-  // Handling conversations
+  // Conversations
   createConversation: (id: string) => void;
   updateConversation: (
     id: string,
@@ -37,7 +48,7 @@ interface ChatState {
   ) => void;
   deleteConversation: (id: string) => void;
 
-  // Handling messages
+  // Messages
   addMessage: (conversationId: string, message: MessageType) => void;
   addWordToMessage: (messageId: string, word: string) => void;
   updateMessage: (
@@ -45,11 +56,15 @@ interface ChatState {
     message: Partial<Omit<MessageType, "id" | "createdAt">>
   ) => void;
   deleteMessage: (id: string) => void;
+
+  // Corrections
+  addCorrection: (correction: CorrectionType) => void;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
   conversations: {},
   messages: {},
+  corrections: {},
   currentConversationId: null,
   selectedModelId: defaultModelId,
 
@@ -217,6 +232,15 @@ export const useChatStore = create<ChatState>((set) => ({
       conversations: {
         ...state.conversations,
         [id]: { ...state.conversations[id], title },
+      },
+    }));
+  },
+
+  addCorrection: (correction: CorrectionType) => {
+    set((state) => ({
+      corrections: {
+        ...state.corrections,
+        [correction.id]: correction,
       },
     }));
   },

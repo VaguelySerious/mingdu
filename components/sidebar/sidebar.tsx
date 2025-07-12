@@ -6,6 +6,7 @@ import { generateId } from "ai";
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
+import { ModelPicker } from "../settings/model-picker";
 import { Conversation } from "./conversation";
 
 export function Sidebar() {
@@ -101,6 +102,7 @@ export function Sidebar() {
           ))}
         </div>
       </div>
+      <ModelPicker />
     </aside>
   );
 }

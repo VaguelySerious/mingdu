@@ -1,5 +1,12 @@
 "use client";
-import { ModelType } from "@/lib/openai";
+import {
+  getAIKey,
+  hasAIKey,
+  isAnthropicModel,
+  isOpenAIModel,
+  ModelType,
+} from "@/ai/provider";
+import { useChatStore } from "@/lib/store";
 import {
   Select,
   SelectContent,
@@ -9,18 +16,24 @@ import {
   SelectValue,
 } from "../ui/select";
 
-interface ModelPickerProps {
-  selectedModel: ModelType;
-  setSelectedModel: (model: ModelType) => void;
-}
+export const ModelPicker = () => {
+  const selectedModelId = useChatStore((state) => state.selectedModelId);
+  const setSelectedModelId = useChatStore((state) => state.setSelectedModelId);
 
-export const ModelPicker = ({
-  selectedModel,
-  setSelectedModel,
-}: ModelPickerProps) => {
+  const handleModelChange = (modelId: string) => {
+    const missingKey =
+      (isAnthropicModel(modelId) && !hasAIKey("anthropic")) ||
+      (isOpenAIModel(modelId) && !hasAIKey("openai"));
+
+    if (missingKey) {
+      getAIKey(isAnthropicModel(modelId) ? "anthropic" : "openai");
+    }
+    setSelectedModelId(modelId as ModelType);
+  };
+
   return (
-    <div className="absolute bottom-2 left-2 flex flex-col gap-2">
-      <Select value={selectedModel} onValueChange={setSelectedModel}>
+    <div className="absolute p-4 bottom-2 left-2 flex flex-col gap-2">
+      <Select value={selectedModelId} onValueChange={handleModelChange}>
         <SelectTrigger className="">
           <SelectValue placeholder="Select a model" />
         </SelectTrigger>
