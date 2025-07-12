@@ -1,5 +1,5 @@
 "use client";
-import { MODELS, type modelID } from "@/ai/providers";
+import { ModelIDType, MODELS } from "@/ai/providers";
 import {
   Select,
   SelectContent,
@@ -10,8 +10,8 @@ import {
 } from "../ui/select";
 
 interface ModelPickerProps {
-  selectedModel: modelID;
-  setSelectedModel: (model: modelID) => void;
+  selectedModel: ModelIDType;
+  setSelectedModel: (model: ModelIDType) => void;
 }
 
 export const ModelPicker = ({

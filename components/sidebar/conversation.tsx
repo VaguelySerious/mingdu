@@ -1,4 +1,4 @@
-import { ConversationType } from "@/lib/types";
+import { ConversationType } from "@/lib/store";
 import { MessageCircle, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 
@@ -15,7 +15,7 @@ export const Conversation = ({
   onClick: (conversationId: string) => void;
   onDelete: (conversationId: string) => void;
 }) => {
-  const messageCount = conversation.messages.length;
+  const messageCount = conversation.messageIds.length;
 
   return (
     <div
@@ -35,7 +35,7 @@ export const Conversation = ({
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-              {conversation.title}
+              {conversation.title || "New Chat"}
             </p>
           </div>
           <p className="flex items-center text-xs text-gray-500 dark:text-gray-400">

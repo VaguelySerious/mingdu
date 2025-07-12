@@ -1,15 +1,13 @@
 import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom";
-import type { Message as MessageType } from "ai";
+import { QueryStatusType } from "@/lib/types";
 import { Message } from "./message";
 
 export const Messages = ({
-  messages,
-  isLoading,
-  status,
+  messageIds,
+  queryStatus,
 }: {
-  messages: MessageType[];
-  isLoading: boolean;
-  status: "error" | "submitted" | "streaming" | "ready";
+  messageIds: string[];
+  queryStatus: QueryStatusType;
 }) => {
   const [containerRef, endRef] = useScrollToBottom();
   return (
@@ -18,13 +16,12 @@ export const Messages = ({
       ref={containerRef}
     >
       <div className="max-w-xl mx-auto pt-8">
-        {messages.map((m, i) => (
+        {messageIds.map((id) => (
           <Message
-            key={i}
-            isLatestMessage={i === messages.length - 1}
-            isLoading={isLoading}
-            message={m}
-            status={status}
+            key={id}
+            id={id}
+            isLatestMessage={id === messageIds[messageIds.length - 1]}
+            queryStatus={queryStatus}
           />
         ))}
         <div className="h-1" ref={endRef} />

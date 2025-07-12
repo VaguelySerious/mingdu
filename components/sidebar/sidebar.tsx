@@ -1,32 +1,37 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useChatStore } from "@/lib/store";
+import { generateId } from "ai";
 import { Plus } from "lucide-react";
 import Image from "next/image";
+import { useEffect } from "react";
 import { Conversation } from "./conversation";
 
-import { ConversationType } from "@/lib/types";
-interface SidebarProps {
-  onNewConversation: () => void;
-  conversations: ConversationType[];
-  currentConversation: ConversationType;
-  switchToConversation: (conversationId: string) => void;
-  deleteConversation: (conversationId: string) => void;
-}
+export function Sidebar() {
+  const currentConversationId = useChatStore(
+    (state) => state.currentConversationId
+  );
+  const conversations = Object.values(
+    useChatStore((state) => state.conversations)
+  ).sort((a, b) => b.createdAt - a.createdAt);
+  const currentConversation = conversations.find(
+    (c) => c.id === currentConversationId
+  );
 
-export function Sidebar({
-  onNewConversation,
-  conversations,
-  currentConversation,
-  switchToConversation,
-  deleteConversation,
-}: SidebarProps) {
+  const selectConversation = useChatStore((state) => state.selectConversation);
+  const onNewConversation = useChatStore((state) => state.createConversation);
+  const deleteConversation = useChatStore((state) => state.deleteConversation);
+  const updateConversation = useChatStore((state) => state.updateConversation);
+
   const handleConversationClick = (conversationId: string) => {
-    switchToConversation(conversationId);
+    selectConversation(conversationId);
   };
 
   const handleNewConversation = () => {
-    onNewConversation();
+    const id = generateId();
+    onNewConversation(id);
+    selectConversation(id);
   };
 
   const handleDeleteConversation = (conversationId: string) => {
@@ -34,6 +39,23 @@ export function Sidebar({
       deleteConversation(conversationId);
     }
   };
+
+  useEffect(() => {
+    if (
+      currentConversation &&
+      currentConversation.messageIds.length >= 1 &&
+      !currentConversation.title
+    ) {
+      const message =
+        useChatStore.getState().messages[currentConversation.messageIds[0]];
+      const content = message.words.join("");
+      const title = content.slice(0, 20);
+      console.log("Setting title", title);
+      updateConversation(currentConversation.id, {
+        title,
+      });
+    }
+  }, [currentConversation, updateConversation]);
 
   return (
     <aside className="w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex flex-col">
@@ -52,11 +74,12 @@ export function Sidebar({
           </h1>
         </div>
       </div>
-
       {/* New Conversation Button */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-800">
         <Button
-          disabled={!currentConversation.messages.length}
+          disabled={
+            conversations.length > 0 && !currentConversation?.messageIds.length
+          }
           onClick={handleNewConversation}
           className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
         >
@@ -64,22 +87,19 @@ export function Sidebar({
           <span>New Chat</span>
         </Button>
       </div>
-
       {/* Conversations List */}
       <div className="flex-1 overflow-y-auto p-2">
         <div className="space-y-1">
-          {conversations
-            .filter((c) => c.title)
-            .map((conversation) => (
-              <Conversation
-                key={conversation.id}
-                conversation={conversation}
-                selected={currentConversation.id === conversation.id}
-                canDelete={conversations.length > 1}
-                onClick={handleConversationClick}
-                onDelete={handleDeleteConversation}
-              />
-            ))}
+          {conversations.map((conversation) => (
+            <Conversation
+              key={conversation.id}
+              conversation={conversation}
+              selected={currentConversation?.id === conversation.id}
+              canDelete={conversations.length > 1}
+              onClick={handleConversationClick}
+              onDelete={handleDeleteConversation}
+            />
+          ))}
         </div>
       </div>
     </aside>

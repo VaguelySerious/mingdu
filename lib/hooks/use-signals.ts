@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 
 type MessageCallback<T> = (message: T) => void;
 
@@ -10,7 +10,8 @@ type Topic = (typeof SIGNAL_TOPICS)[keyof typeof SIGNAL_TOPICS];
 
 type TopicMessageMap = {
   [SIGNAL_TOPICS.MESSAGE_COMPLETED]: {
-    message: string;
+    messageId: string;
+    conversationId: string;
   };
 };
 
@@ -57,10 +58,16 @@ export const addSignalListener = <T extends Topic>(
   };
 };
 
-export const useSignal = <T extends Topic>(topic: T) => {
-  const [signal, setSignal] = useState<TopicMessageMap[T] | null>(null);
+export const useSignal = <T extends Topic>(
+  topic: T,
+  callback: MessageCallback<TopicMessageMap[T]>,
+  callbackDeps: unknown[]
+) => {
+  const cachedCallback = useCallback((message: TopicMessageMap[T]) => {
+    return callback(message);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, callbackDeps);
   useEffect(() => {
-    return addSignalListener(topic, setSignal);
-  }, [topic]);
-  return signal;
+    return addSignalListener(topic, cachedCallback);
+  }, [topic, cachedCallback]);
 };
