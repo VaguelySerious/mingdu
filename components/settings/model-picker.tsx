@@ -1,5 +1,5 @@
 "use client";
-import { ModelIDType, MODELS } from "@/ai/providers";
+import { ModelType } from "@/lib/openai";
 import {
   Select,
   SelectContent,
@@ -10,8 +10,8 @@ import {
 } from "../ui/select";
 
 interface ModelPickerProps {
-  selectedModel: ModelIDType;
-  setSelectedModel: (model: ModelIDType) => void;
+  selectedModel: ModelType;
+  setSelectedModel: (model: ModelType) => void;
 }
 
 export const ModelPicker = ({
@@ -26,7 +26,7 @@ export const ModelPicker = ({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            {MODELS.map((modelId) => (
+            {Object.values(ModelType).map((modelId) => (
               <SelectItem key={modelId} value={modelId}>
                 {modelId}
               </SelectItem>

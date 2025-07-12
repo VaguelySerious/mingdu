@@ -1,4 +1,4 @@
-import { defaultModelId, ModelIDType } from "@/ai/providers";
+import { defaultModelId, ModelType } from "@/lib/openai";
 import { omit } from "lodash-es";
 import { create } from "zustand";
 
@@ -23,10 +23,10 @@ interface ChatState {
   conversations: Record<string, ConversationType>;
   messages: Record<string, MessageType>;
   currentConversationId: string | null;
-  selectedModelId: ModelIDType;
+  selectedModelId: ModelType;
 
   // Settings
-  setSelectedModelId: (modelId: ModelIDType) => void;
+  setSelectedModelId: (modelId: ModelType) => void;
   selectConversation: (id: string | null) => void;
 
   // Handling conversations
@@ -57,7 +57,7 @@ export const useChatStore = create<ChatState>((set) => ({
     set({ currentConversationId: id });
   },
 
-  setSelectedModelId: (modelId: ModelIDType) => {
+  setSelectedModelId: (modelId: ModelType) => {
     set({ selectedModelId: modelId });
   },
 

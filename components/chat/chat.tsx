@@ -1,17 +1,12 @@
 "use client";
 
-import { CHAT_SYSTEM_PROMPT } from "@/ai/prompts";
+import { chatRequest } from "@/ai/chat";
 import { sendSignal, SIGNAL_TOPICS } from "@/lib/hooks/use-signals";
-import {
-  getOpenAIKey,
-  getOpenAIProvider,
-  promptForOpenAIKey,
-} from "@/lib/keymanager";
+import { getOpenAIKey, promptForOpenAIKey } from "@/lib/openai";
 import { MessageType, useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
-import { CoreMessage as APIMessageType, generateId, streamObject } from "ai";
+import { CoreMessage as APIMessageType, generateId } from "ai";
 import { useCallback, useEffect, useState } from "react";
-import z from "zod";
 import { InitialScreen } from "../help/initial-screen";
 import { Messages } from "./messages";
 import { Textarea } from "./textarea";
@@ -31,7 +26,6 @@ export default function Chat({ conversationId }: { conversationId: string }) {
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      setQueryStatus("submitted");
       console.debug("handleSubmit");
 
       const state = useChatStore.getState();
@@ -66,32 +60,22 @@ export default function Chat({ conversationId }: { conversationId: string }) {
         })
       );
 
-      const { elementStream: wordStream } = streamObject({
-        model: getOpenAIProvider(selectedModelId),
-        output: "array",
-        schema: z.string().describe("List of words"),
-        schemaDescription: "List of words or special characters in Mandarin",
-        system: CHAT_SYSTEM_PROMPT,
-        messages: promptMessages,
-        onError: (error) => {
-          // TODO: Better error handling
-          console.error(error);
-          setQueryStatus("error");
-        },
-        onFinish: () => {
-          setQueryStatus("ready");
-          sendSignal(SIGNAL_TOPICS.MESSAGE_COMPLETED, {
-            messageId: assistantMessage.id,
-            conversationId,
-          });
-        },
-      });
-
-      console.debug("wordStream created");
-
-      for await (const word of wordStream) {
+      const onWord = (word: string) => {
         setQueryStatus("streaming");
         state.addWordToMessage(assistantMessage.id, word as string);
+      };
+
+      try {
+        setQueryStatus("submitted");
+        await chatRequest(selectedModelId, promptMessages, onWord);
+        setQueryStatus("ready");
+        sendSignal(SIGNAL_TOPICS.MESSAGE_COMPLETED, {
+          messageId: assistantMessage.id,
+          conversationId,
+        });
+      } catch (e) {
+        setQueryStatus("error");
+        console.error(e);
       }
     },
     [selectedModelId, conversationId, input, setQueryStatus, messageIds]

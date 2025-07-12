@@ -1,5 +1,14 @@
-import { defaultModelId, ModelIDType } from "@/ai/providers";
 import { createOpenAI } from "@ai-sdk/openai";
+
+export enum ModelType {
+  GPT_4_1_NANO = "gpt-4.1-nano",
+  GPT_4_1_MINI = "gpt-4.1-mini",
+  GPT_4_1 = "gpt-4.1",
+  GPT_4O = "gpt-4o",
+  GPT_4O_MINI = "gpt-4o-mini",
+}
+
+export const defaultModelId = ModelType.GPT_4_1_MINI;
 
 export const getOpenAIKey = () => {
   try {
@@ -28,7 +37,7 @@ export const promptForOpenAIKey = () => {
   }
 };
 
-export const getOpenAIProvider = (modelId?: ModelIDType) => {
+export const getOpenAIProvider = (modelId?: ModelType) => {
   return createOpenAI({
     apiKey: getOpenAIKey() ?? "",
   }).chat(modelId ?? defaultModelId);
