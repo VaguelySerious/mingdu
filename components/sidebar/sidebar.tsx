@@ -50,7 +50,6 @@ export function Sidebar() {
         useChatStore.getState().messages[currentConversation.messageIds[0]];
       const content = message.words.join("");
       const title = content.slice(0, 20);
-      console.log("Setting title", title);
       updateConversation(currentConversation.id, {
         title,
       });
