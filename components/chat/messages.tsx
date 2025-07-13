@@ -1,3 +1,5 @@
+"use client";
+
 import { useScrollToBottom } from "@/lib/hooks/use-scroll-to-bottom";
 import { QueryStatusType } from "@/lib/types";
 import { Message } from "./message";

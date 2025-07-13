@@ -1,3 +1,4 @@
+"use client";
 export const InitialScreen = () => {
   return (
     <div className="py-10 flex flex-col items-center justify-end">

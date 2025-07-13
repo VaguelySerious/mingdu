@@ -1,3 +1,5 @@
+"use client";
+
 interface CounterProps {
   count: number;
 }

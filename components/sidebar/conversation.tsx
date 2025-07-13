@@ -1,3 +1,5 @@
+"use client";
+
 import { ConversationType } from "@/lib/store";
 import { MessageCircle, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";

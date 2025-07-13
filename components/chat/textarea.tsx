@@ -1,3 +1,4 @@
+"use client";
 import { Textarea as ShadcnTextarea } from "@/components/ui/textarea";
 import { ArrowUp } from "lucide-react";
 import { Spinner } from "../ui/spinner";

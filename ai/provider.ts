@@ -20,13 +20,13 @@ export enum ModelType {
   GPT_4O_MINI = "gpt-4o-mini",
 
   // Anthropic
-  CLAUDE_3_HAIKU = "claude-3-haiku",
-  CLAUDE_3_5_HAIKU = "claude-3-5-haiku",
-  CLAUDE_SONNET_4 = "claude-sonnet-4",
-  CLAUDE_OPUS_4 = "claude-opus-4",
+  CLAUDE_3_HAIKU = "claude-3-haiku-20240307",
+  CLAUDE_3_5_HAIKU = "claude-3-5-haiku-latest",
+  CLAUDE_4_SONNET = "claude-sonnet-4-latest",
+  CLAUDE_4_OPUS = "claude-opus-4-latest",
 }
 
-export const defaultModelId = ModelType.CLAUDE_3_5_HAIKU;
+export const defaultModelId = ModelType.GPT_4_1_MINI;
 
 export const hasAIKey = (provider: "openai" | "anthropic") => {
   return !!getAIKey(provider);
