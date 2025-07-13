@@ -1,11 +1,11 @@
 "use client";
 
-import { chatRequest } from "@/ai/chat";
+import { chatTextRequest } from "@/ai/chat-free";
 import { sendSignal, SIGNAL_TOPICS } from "@/lib/hooks/use-signals";
 import { MessageType, useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
 import { CoreMessage as APIMessageType, generateId } from "ai";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { InitialScreen } from "../help/initial-screen";
 import { Messages } from "./messages";
 import { Textarea } from "./textarea";
@@ -16,15 +16,21 @@ export default function Chat({ conversationId }: { conversationId: string }) {
   const messageIds = useChatStore(
     (state) => state.conversations[conversationId]?.messageIds ?? []
   );
-  const [input, setInput] = useState(
-    messageIds.length === 0 ? "你怎么样？" : ""
-  );
+  const [input, setInput] = useState("");
+  const messageCount = messageIds.length;
   const [queryStatus, setQueryStatus] = useState<QueryStatusType>("ready");
+
+  useEffect(() => {
+    if (messageCount === 0) {
+      setInput("你怎么样？");
+    }
+  }, [messageCount]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       console.debug("handleSubmit");
+      setInput("");
 
       const state = useChatStore.getState();
       const allMessages = useChatStore.getState().messages;
@@ -65,15 +71,29 @@ export default function Chat({ conversationId }: { conversationId: string }) {
 
       try {
         setQueryStatus("submitted");
-        await chatRequest(selectedModelId, promptMessages, onWord);
+        await chatTextRequest(selectedModelId, promptMessages, onWord);
         setQueryStatus("ready");
         sendSignal(SIGNAL_TOPICS.MESSAGE_COMPLETED, {
           messageId: assistantMessage.id,
           conversationId,
         });
-      } catch (e) {
+      } catch (e: unknown) {
+        let message: string = "Unknown error";
+        if (e instanceof Error) {
+          message = e.message;
+        } else if (typeof e === "string") {
+          message = e;
+        } else if (
+          e &&
+          typeof e === "object" &&
+          "error" in e &&
+          e.error instanceof Error
+        ) {
+          message = e.error.message;
+        }
+        state.updateMessage(assistantMessage.id, { error: message });
+        console.debug(e);
         setQueryStatus("error");
-        console.error(e);
       }
     },
     [selectedModelId, conversationId, input, setQueryStatus, messageIds]

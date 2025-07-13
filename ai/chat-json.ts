@@ -1,8 +1,13 @@
-import { getAIProvider, ModelType } from "@/ai/provider";
+import { getAIProvider, getProviderType, ModelType } from "@/ai/provider";
 import { CoreMessage as APIMessageType, streamObject } from "ai";
 import z from "zod";
 
-export const CHAT_SYSTEM_PROMPT = [
+// Note: While I originally thought this would work well to ensure chunking,
+// it seems to confuse the model heavily sometimes, resulting in it giving back the
+// exact string it was given, despite prompts to the contrary, hence this
+// was replaced with `chat-free.ts` for now, which seems to work better.
+
+const CHAT_SYSTEM_PROMPT = [
   `You're a personal and friendly Mandarin tutor, talking to a student `,
   `around HSK level 4. The student mostly wants to practice having natural written`,
   `written conversation, like they would with a friend from China. You answer`,
@@ -24,17 +29,18 @@ const WORD_LIST_DESCRIPTION = [
   "List of separated words making up the response to the student.",
 ].join(" ");
 
-const TEMPERATURE = 0.5;
+const TEMPERATURE = 0.2;
 
-export const chatRequest = (
+export const chatJsonRequest = (
   modelId: ModelType,
   promptMessages: APIMessageType[],
   onWord: (word: string) => void
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const provider = getProviderType(modelId);
       const { elementStream: wordStream } = streamObject({
-        model: getAIProvider("openai", modelId),
+        model: getAIProvider(provider, modelId),
         output: "array",
         schema: z.string().describe(WORD_LIST_DESCRIPTION),
         schemaDescription: SCHEMA_MESSAGE,

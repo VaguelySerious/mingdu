@@ -28,13 +28,22 @@ const PurePreviewMessage = ({
   queryStatus: QueryStatusType;
   isLatestMessage: boolean;
 }) => {
-  const { role, words } = useChatStore((state) => state.messages[id]);
-  const messageId = `message-${id}`;
+  const { error, role, words } = useChatStore((state) => state.messages[id]);
+  const messageKey = `message-${id}`;
   const loadingStates = ["streaming", "submitted"] as QueryStatusType[];
   const shouldShowLoading =
     isLatestMessage && loadingStates.includes(queryStatus);
+
+  if (error) {
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
+
   return (
-    <AnimatePresence key={messageId}>
+    <AnimatePresence key={messageKey}>
       <motion.div
         className="w-full mx-auto px-4 group/message"
         initial={{ y: 5, opacity: 0 }}
@@ -68,11 +77,11 @@ const PurePreviewMessage = ({
                   role === "user",
               })}
             >
-              <div className="flex w-full space-y-4">
+              <div className="flex w-full">
                 {words.map((word, i) => {
-                  const wordId = `${messageId}-word-${i}`;
+                  const wordKey = `${messageKey}-word-${i}`;
                   return (
-                    <Word key={wordId} id={wordId} role={role} word={word} />
+                    <Word key={wordKey} id={wordKey} role={role} word={word} />
                   );
                 })}
               </div>

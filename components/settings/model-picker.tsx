@@ -2,9 +2,9 @@
 
 import {
   getAIKey,
+  getProviderType,
   hasAIKey,
   isAnthropicModel,
-  isOpenAIModel,
   ModelType,
 } from "@/ai/provider";
 import { useChatStore } from "@/lib/store";
@@ -42,9 +42,8 @@ export const ModelPicker = () => {
   };
 
   const handleModelChange = (modelId: string) => {
-    const missingKey =
-      (isAnthropicModel(modelId) && !hasAIKey("anthropic")) ||
-      (isOpenAIModel(modelId) && !hasAIKey("openai"));
+    const provider = getProviderType(modelId);
+    const missingKey = !hasAIKey(provider);
 
     if (missingKey) {
       getAIKey(isAnthropicModel(modelId) ? "anthropic" : "openai");

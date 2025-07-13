@@ -11,6 +11,15 @@ export const isOpenAIModel = (modelId: string) => {
   return modelId.startsWith("gpt");
 };
 
+export const getProviderType = (modelId: string) => {
+  if (isAnthropicModel(modelId)) {
+    return "anthropic";
+  } else if (isOpenAIModel(modelId)) {
+    return "openai";
+  }
+  throw new Error(`Invalid model: ${modelId}`);
+};
+
 export enum ModelType {
   // OpenAI
   GPT_4_1_NANO = "gpt-4.1-nano",
@@ -22,8 +31,8 @@ export enum ModelType {
   // Anthropic
   CLAUDE_3_HAIKU = "claude-3-haiku-20240307",
   CLAUDE_3_5_HAIKU = "claude-3-5-haiku-latest",
-  CLAUDE_4_SONNET = "claude-sonnet-4-latest",
-  CLAUDE_4_OPUS = "claude-opus-4-latest",
+  CLAUDE_4_SONNET = "claude-sonnet-4-0",
+  CLAUDE_4_OPUS = "claude-opus-4-0",
 }
 
 export const defaultModelId = ModelType.GPT_4_1_MINI;
@@ -69,7 +78,10 @@ export const getAIProvider = (provider: ProviderType, modelId?: ModelType) => {
   } else if (provider === "anthropic") {
     return createAnthropic({
       apiKey: getAIKey("anthropic") ?? "",
-    }).chat(modelId ?? defaultModelId);
+      headers: {
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+    }).languageModel(modelId ?? defaultModelId);
   } else {
     throw new Error(`Invalid provider: ${provider}`);
   }
