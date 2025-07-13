@@ -77,7 +77,7 @@ const PurePreviewMessage = ({
                   role === "user",
               })}
             >
-              <div className="flex w-full">
+              <div className="flex w-full flex-wrap">
                 {words.map((word, i) => {
                   const wordKey = `${messageKey}-word-${i}`;
                   return (

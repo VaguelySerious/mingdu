@@ -1,14 +1,22 @@
 "use client";
 import { Textarea as ShadcnTextarea } from "@/components/ui/textarea";
+import { QueryStatusType } from "@/lib/types";
 import { ArrowUp } from "lucide-react";
 import { Spinner } from "../ui/spinner";
 
 interface InputProps {
   input: string;
   handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  queryStatus: string;
+  queryStatus: QueryStatusType;
   stop: () => void;
 }
+
+const QUERY_STATUS_MAP: Record<QueryStatusType, string> = {
+  streaming: "Streaming...",
+  submitted: "Waiting...",
+  ready: "Ready",
+  error: "Error",
+};
 
 export const Textarea = ({
   input,
@@ -37,8 +45,10 @@ export const Textarea = ({
           }
         }}
       />
-
-      {status === "streaming" || status === "submitted" ? (
+      <div className="absolute p-4 bottom-2 left-2 flex flex-col gap-2">
+        <div className="text-sm">{QUERY_STATUS_MAP[queryStatus]}</div>
+      </div>
+      {queryStatus === "streaming" || queryStatus === "submitted" ? (
         <button
           type="button"
           onClick={stop}

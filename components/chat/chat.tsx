@@ -120,7 +120,6 @@ export default function Chat({ conversationId }: { conversationId: string }) {
           stop={stop}
         />
       </form>
-      <div className="max-w-xl mx-auto w-full">Status: {queryStatus}</div>
     </div>
   );
 }
