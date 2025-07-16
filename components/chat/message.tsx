@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { memo } from "react";
 
-import { useChatStore } from "@/lib/store";
+import { MessageType, useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { SparklesIcon } from "lucide-react";
@@ -18,6 +18,25 @@ const Spinner = () => (
     </div>
   </div>
 );
+
+const WordSpan = ({
+  words,
+  messageKey,
+  role,
+}: {
+  words: string[];
+  messageKey: string;
+  role: MessageType["role"];
+}) => {
+  return (
+    <div className="flex w-full flex-wrap">
+      {words.map((word, i) => {
+        const wordKey = `${messageKey}-word-${i}`;
+        return <Word key={wordKey} id={wordKey} role={role} word={word} />;
+      })}
+    </div>
+  );
+};
 
 const PurePreviewMessage = ({
   id,
@@ -82,14 +101,7 @@ const PurePreviewMessage = ({
                   role === "user",
               })}
             >
-              <div className="flex w-full flex-wrap">
-                {words.map((word, i) => {
-                  const wordKey = `${messageKey}-word-${i}`;
-                  return (
-                    <Word key={wordKey} id={wordKey} role={role} word={word} />
-                  );
-                })}
-              </div>
+              <WordSpan words={words} messageKey={messageKey} role={role} />
             </div>
           </motion.div>
 
