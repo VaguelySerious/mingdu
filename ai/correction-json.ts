@@ -20,27 +20,26 @@ const CORRECTION_SYSTEM_PROMPT = [
 const TEMPERATURE = 0.2;
 
 const CORRECTION_SCHEMA = z.object({
-  corrections: z.string(),
-  // corrections: z.array(
-  //   z.string()
-  //   // z.object({
-  //   //   original: z
-  //   //     .string()
-  //   //     .describe(
-  //   //       "Copy of the minimal original substring that needs correction."
-  //   //     ),
-  //   //   correction: z.string().describe("The corrected substring"),
-  //   //   explanation: z
-  //   //     .string()
-  //   //     .describe(
-  //   //       [
-  //   //         `Additional information, using minimal Mandarin, answering questions`,
-  //   //         `such as what makes this correction necessary, what would be other good examples, what would the uncorrected`,
-  //   //         `text falsely convey?`,
-  //   //       ].join(" ")
-  //   //     ),
-  //   // })
-  // ),
+  corrections: z.array(
+    z.string()
+    // z.object({
+    //   original: z
+    //     .string()
+    //     .describe(
+    //       "Copy of the minimal original substring that needs correction."
+    //     ),
+    //   correction: z.string().describe("The corrected substring"),
+    //   explanation: z
+    //     .string()
+    //     .describe(
+    //       [
+    //         `Additional information, using minimal Mandarin, answering questions`,
+    //         `such as what makes this correction necessary, what would be other good examples, what would the uncorrected`,
+    //         `text falsely convey?`,
+    //       ].join(" ")
+    //     ),
+    // })
+  ),
 });
 
 type CorrectionItemType = z.infer<typeof CORRECTION_SCHEMA>;
