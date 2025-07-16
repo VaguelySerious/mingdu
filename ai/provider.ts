@@ -1,6 +1,5 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
-import { type LanguageModelV2 } from "@ai-sdk/provider";
 
 export type ProviderType = "openai" | "anthropic";
 
@@ -36,7 +35,7 @@ export enum ModelType {
   CLAUDE_4_OPUS = "claude-opus-4-0",
 }
 
-export const defaultModelId = ModelType.GPT_4O_MINI;
+export const defaultModelId = ModelType.CLAUDE_3_5_HAIKU;
 
 export const hasAIKey = (provider: "openai" | "anthropic") => {
   return !!getAIKey(provider);
@@ -71,10 +70,7 @@ export const setAIKey = (provider: "openai" | "anthropic", key: string) => {
   }
 };
 
-export const getAIProvider = (
-  provider: ProviderType,
-  modelId?: ModelType
-): LanguageModelV2 => {
+export const getAIProvider = (provider: ProviderType, modelId?: ModelType) => {
   if (provider === "openai") {
     return createOpenAI({
       apiKey: getAIKey("openai") ?? "",
