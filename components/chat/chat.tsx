@@ -2,7 +2,9 @@
 
 import { chatTextRequest } from "@/ai/chat";
 import { correctionJsonRequest } from "@/ai/correction-json";
+import { recipeRequest } from "@/ai/recipe";
 import { splitTextRequest } from "@/ai/split";
+import { Button } from "@/components/ui/button";
 import { sendSignal, SIGNAL_TOPICS } from "@/lib/hooks/use-signals";
 import { MessageType, useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
@@ -133,6 +135,12 @@ export default function Chat({ conversationId }: { conversationId: string }) {
           stop={stop}
         />
       </form>
+      <Button
+        className="w-[100px] mx-auto items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
+        onClick={() => recipeRequest()}
+      >
+        Recipe
+      </Button>
     </div>
   );
 }
