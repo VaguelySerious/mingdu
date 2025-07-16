@@ -34,6 +34,11 @@ const PurePreviewMessage = ({
   const shouldShowLoading =
     isLatestMessage && loadingStates.includes(queryStatus);
 
+  const correction = useChatStore((state) =>
+    Object.values(state.corrections).find((c) => c.messageId === id)
+  );
+  const correctionItems = correction?.items ?? [];
+
   if (error) {
     return (
       <div className="flex flex-col gap-4">
