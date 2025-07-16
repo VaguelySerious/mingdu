@@ -10,6 +10,6 @@ export const Word = ({
   role: MessageType["role"];
   word: string;
 }) => {
-  return <span className="whitespace-nowrap">{word}</span>;
+  return <span className="ml-1 whitespace-nowrap">{word}</span>;
   // return <Markdown>{word}</Markdown>;
 };
