@@ -2,10 +2,10 @@ import { getAIProvider, getProviderType, ModelType } from "@/ai/provider";
 import { generateObject } from "ai";
 import z from "zod";
 
-export const recipeRequest = async () => {
+export const recipeRequest = async (modelId: ModelType) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const _modelId = ModelType.CLAUDE_3_5_HAIKU;
+      const _modelId = modelId;
       const model = getAIProvider(getProviderType(_modelId), _modelId);
       const { object } = await generateObject({
         model,
