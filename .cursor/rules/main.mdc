@@ -17,6 +17,7 @@ Right now, we're at the start of the project, with only a basic chat interface d
 - Local storage tracking of how often any word appeared on screen (counted first time it is returned by LLM and stored) (TODO)
 - Local storage tracking of how often any word was used in writing by user (counted when user message submitted) (TODO)
 - Coloring of words based on mastery (mix of appearance count + use count) (TODO)
+- Correction prompts give context of past conversations to be more accurate
 - User may ask the tutor about anything or direct as wished, otherwise tutor will default to asking the user about their day, etc. (TODO)
 - For every user message, two AI API requests are made in parallel:
   - One conversing with the user like a friend, ignoring the user's mistakes and not acting as a tutor, unless the user asks specific questions about language use

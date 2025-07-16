@@ -35,7 +35,7 @@ export enum ModelType {
   CLAUDE_4_OPUS = "claude-opus-4-0",
 }
 
-export const defaultModelId = ModelType.GPT_4_1_MINI;
+export const defaultModelId = ModelType.GPT_4O_MINI;
 
 export const hasAIKey = (provider: "openai" | "anthropic") => {
   return !!getAIKey(provider);

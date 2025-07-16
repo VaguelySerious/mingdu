@@ -1,6 +1,7 @@
 "use client";
 
-import { chatTextRequest } from "@/ai/chat-free";
+import { chatTextRequest } from "@/ai/chat";
+import { splitTextRequest } from "@/ai/split";
 import { sendSignal, SIGNAL_TOPICS } from "@/lib/hooks/use-signals";
 import { MessageType, useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
@@ -41,12 +42,15 @@ export default function Chat({ conversationId }: { conversationId: string }) {
         id: generateId(),
         role: "user",
         // TODO: split words using AI query later
-        words: input.split(""),
+        words: [input],
         createdAt: now,
       };
       state.addMessage(conversationId, userMessage);
 
-      // TODO Start separate async process that replaces user message with word-split message
+      splitTextRequest(selectedModelId, input).then((words) => {
+        userMessage.words = words;
+        state.updateMessage(userMessage.id, userMessage);
+      });
 
       const assistantMessage: MessageType = {
         id: generateId(),

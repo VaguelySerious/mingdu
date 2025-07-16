@@ -1,5 +1,6 @@
 import { getAIProvider, getProviderType, ModelType } from "@/ai/provider";
 import { CoreMessage as APIMessageType, streamText } from "ai";
+import { PipeBuffer, SPLIT_EXAMPLES } from "./pipebuffer";
 
 const CHAT_SYSTEM_PROMPT = [
   `You're a personal and friendly Mandarin tutor, talking to a student `,
@@ -11,10 +12,7 @@ const CHAT_SYSTEM_PROMPT = [
   `You respond only in Mandarin, unless absolutely required to explain a concept the student is struggling with,`,
   `and you do not provide translations unless specifically asked.`,
   `You always split words in your response by pipes ("|"), so the student can more easily look up the words in a dictionary.`,
-  `Example: if you would normally respond with "我觉得今天的天气很好，但是有点热", you instead respond with`,
-  `我|觉得|今天|的|天气|很|好|，|但是|有点|热|。`,
-  `When in doubt, split words into as many pieces as possible, e.g. "有什么" should be split into "有|什么", as we must`,
-  `ensure each word can be looked up in a dictionary.`,
+  `\n${SPLIT_EXAMPLES}`,
 ].join(" ");
 
 const TEMPERATURE = 0.2;
@@ -22,10 +20,11 @@ const TEMPERATURE = 0.2;
 export const chatTextRequest = (
   modelId: ModelType,
   promptMessages: APIMessageType[],
-  onWord: (word: string) => void
-) => {
+  onWord?: (word: string) => void
+): Promise<string[]> => {
   return new Promise(async (resolve, reject) => {
     try {
+      const pipeBuffer = new PipeBuffer(onWord);
       const provider = getProviderType(modelId);
       const { textStream } = streamText({
         model: getAIProvider(provider, modelId),
@@ -35,18 +34,13 @@ export const chatTextRequest = (
         onError: (error) => {
           reject(error);
         },
-        onFinish: () => {
-          resolve(true);
-        },
       });
 
       for await (const text of textStream) {
-        // We need to manually split chunks into words
-        const words = text.split("|").filter((word) => word !== "");
-        for (const word of words) {
-          onWord(word);
-        }
+        await pipeBuffer.processChunk(text);
       }
+      await pipeBuffer.flush();
+      resolve(pipeBuffer.wordAccumulator);
     } catch (e) {
       reject(e);
     }
