@@ -3,7 +3,14 @@
 import { AnimatePresence, motion } from "motion/react";
 import { memo } from "react";
 
-import { MessageType, useChatStore } from "@/lib/store";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { wordsAndCorrectionsToSpans } from "@/lib/arrayspan";
+import type { CorrectionType } from "@/lib/store";
+import { useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { SparklesIcon } from "lucide-react";
@@ -22,19 +29,49 @@ const Spinner = () => (
 const WordSpan = ({
   words,
   messageKey,
-  role,
+  className,
 }: {
   words: string[];
   messageKey: string;
-  role: MessageType["role"];
+  className?: string;
 }) => {
   return (
-    <div className="flex w-full flex-wrap">
+    <span className={cn("flex w-full flex-wrap", className)}>
       {words.map((word, i) => {
         const wordKey = `${messageKey}-word-${i}`;
-        return <Word key={wordKey} id={wordKey} role={role} word={word} />;
+        return <Word role="user" id={wordKey} key={wordKey} word={word} />;
       })}
-    </div>
+    </span>
+  );
+};
+
+const CorrectionSpan = ({
+  words,
+  messageKey,
+  correction,
+}: {
+  words: string[];
+  messageKey: string;
+  correction: CorrectionType["items"][number];
+}) => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <WordSpan
+          words={words}
+          messageKey={messageKey}
+          className="p-1 flex w-full flex-wrap border-b-2 border-pink-500 cursor-pointer"
+        />
+      </TooltipTrigger>
+      <TooltipContent sideOffset={8}>
+        <div className="max-w-xs text-xs">
+          <div className="font-bold mb-1 text-green-600">
+            修正: {correction.correction}
+          </div>
+          <div className="text-white">{correction.explanation}</div>
+        </div>
+      </TooltipContent>
+    </Tooltip>
   );
 };
 
@@ -65,6 +102,8 @@ const PurePreviewMessage = ({
       </div>
     );
   }
+
+  const spans = wordsAndCorrectionsToSpans(words, correctionItems);
 
   return (
     <AnimatePresence key={messageKey}>
@@ -101,7 +140,22 @@ const PurePreviewMessage = ({
                   role === "user",
               })}
             >
-              <WordSpan words={words} messageKey={messageKey} role={role} />
+              {spans.map((span, i) =>
+                span.correction ? (
+                  <CorrectionSpan
+                    key={`${messageKey}-span-${i}`}
+                    words={span.words}
+                    messageKey={`${messageKey}-span-${i}`}
+                    correction={span.correction}
+                  />
+                ) : (
+                  <WordSpan
+                    key={`${messageKey}-span-${i}`}
+                    words={span.words}
+                    messageKey={`${messageKey}-span-${i}`}
+                  />
+                )
+              )}
             </div>
           </motion.div>
 
