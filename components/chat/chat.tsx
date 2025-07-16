@@ -137,7 +137,7 @@ export default function Chat({ conversationId }: { conversationId: string }) {
       </form>
       <Button
         className="w-[100px] mx-auto items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
-        onClick={() => recipeRequest()}
+        onClick={() => recipeRequest(selectedModelId)}
       >
         Recipe
       </Button>
