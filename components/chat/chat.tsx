@@ -1,6 +1,7 @@
 "use client";
 
 import { chatTextRequest } from "@/ai/chat";
+import { correctionJsonRequest } from "@/ai/correction-json";
 import { splitTextRequest } from "@/ai/split";
 import { sendSignal, SIGNAL_TOPICS } from "@/lib/hooks/use-signals";
 import { MessageType, useChatStore } from "@/lib/store";
@@ -23,7 +24,10 @@ export default function Chat({ conversationId }: { conversationId: string }) {
 
   useEffect(() => {
     if (messageCount === 0) {
-      setInput("你怎么样？");
+      setInput(
+        "你好！我叫马克。我刚刚的爱好是去公园骑一个电动独轮车。你知道那是什么吗？"
+      );
+      // setInput("你怎么样？");
     }
   }, [messageCount]);
 
@@ -50,6 +54,11 @@ export default function Chat({ conversationId }: { conversationId: string }) {
       splitTextRequest(selectedModelId, input).then((words) => {
         userMessage.words = words;
         state.updateMessage(userMessage.id, userMessage);
+
+        // // Now that the user message is split, we can start the correction query
+        correctionJsonRequest(selectedModelId, input, (correctionItems) => {
+          console.debug(correctionItems);
+        });
       });
 
       const assistantMessage: MessageType = {
