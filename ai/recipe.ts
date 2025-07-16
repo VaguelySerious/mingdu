@@ -12,9 +12,7 @@ export const recipeRequest = async () => {
         schema: z.object({
           recipe: z.object({
             name: z.string(),
-            ingredients: z.array(
-              z.object({ name: z.string(), amount: z.string() })
-            ),
+            ingredients: z.array(z.string()),
             steps: z.array(z.string()),
           }),
         }),
