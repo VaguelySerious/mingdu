@@ -1,12 +1,12 @@
 "use client";
 
 import { chatTextRequest } from "@/ai/chat";
-import { correctionJsonRequest } from "@/ai/correction-json";
+import { fakeCorrectionJsonRequest } from "@/ai/correction-json";
 import { recipeRequest } from "@/ai/recipe";
 import { splitTextRequest } from "@/ai/split";
 import { Button } from "@/components/ui/button";
 import { sendSignal, SIGNAL_TOPICS } from "@/lib/hooks/use-signals";
-import { MessageType, useChatStore } from "@/lib/store";
+import { CorrectionType, MessageType, useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
 import { CoreMessage as APIMessageType, generateId } from "ai";
 import { useCallback, useEffect, useState } from "react";
@@ -53,15 +53,37 @@ export default function Chat({ conversationId }: { conversationId: string }) {
       };
       state.addMessage(conversationId, userMessage);
 
+      // In parallel, make a request to split the user message into words
       splitTextRequest(selectedModelId, input).then((words) => {
         userMessage.words = words;
         state.updateMessage(userMessage.id, userMessage);
-
-        // // Now that the user message is split, we can start the correction query
-        correctionJsonRequest(selectedModelId, input, (correctionItems) => {
-          console.debug(correctionItems);
-        });
       });
+
+      // In parallel, make a request to correct the user message
+      const correction: CorrectionType = {
+        id: generateId(),
+        messageId: userMessage.id,
+        items: [],
+        createdAt: now,
+        isLoading: true,
+      };
+      state.addCorrection(correction);
+      fakeCorrectionJsonRequest(selectedModelId, input, (correctionResult) => {
+        console.debug(correctionResult);
+        state.updateCorrection(correction.id, {
+          items: correctionResult.corrections,
+        });
+      })
+        .then(() => {
+          state.updateCorrection(correction.id, {
+            isLoading: false,
+          });
+        })
+        .catch((e) => {
+          state.updateCorrection(correction.id, {
+            error: e.message,
+          });
+        });
 
       const assistantMessage: MessageType = {
         id: generateId(),

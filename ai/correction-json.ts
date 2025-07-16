@@ -21,24 +21,23 @@ const TEMPERATURE = 0.2;
 
 const CORRECTION_SCHEMA = z.object({
   corrections: z.array(
-    z.string()
-    // z.object({
-    //   original: z
-    //     .string()
-    //     .describe(
-    //       "Copy of the minimal original substring that needs correction."
-    //     ),
-    //   correction: z.string().describe("The corrected substring"),
-    //   explanation: z
-    //     .string()
-    //     .describe(
-    //       [
-    //         `Additional information, using minimal Mandarin, answering questions`,
-    //         `such as what makes this correction necessary, what would be other good examples, what would the uncorrected`,
-    //         `text falsely convey?`,
-    //       ].join(" ")
-    //     ),
-    // })
+    z.object({
+      original: z
+        .string()
+        .describe(
+          "Copy of the minimal original substring that needs correction."
+        ),
+      correction: z.string().describe("The corrected substring"),
+      explanation: z
+        .string()
+        .describe(
+          [
+            `Additional information, using minimal Mandarin, answering questions`,
+            `such as what makes this correction necessary, what would be other good examples, what would the uncorrected`,
+            `text falsely convey?`,
+          ].join(" ")
+        ),
+    })
   ),
 });
 
@@ -80,4 +79,36 @@ export const correctionJsonRequest = (
       reject(e);
     }
   });
+};
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const FAKE_CORRECTIONS = [
+  {
+    original: "我刚刚的爱好。",
+    correction: "我最近的爱好。",
+    explanation: `刚刚"是指刚才，"最近"更合适。`,
+  },
+  {
+    original: "骑一个电动独轮车",
+    correction: "骑电动独轮车",
+    explanation: `不需要"一个"。`,
+  },
+];
+
+export const fakeCorrectionJsonRequest = async (
+  modelId: ModelType,
+  userMessage: string,
+  onCorrectionItem?: (correctionItem: CorrectionItemType) => void
+): Promise<CorrectionItemType[]> => {
+  await sleep(1000);
+  onCorrectionItem?.({
+    corrections: FAKE_CORRECTIONS.slice(0, 1),
+  });
+  await sleep(1000);
+  onCorrectionItem?.({
+    corrections: FAKE_CORRECTIONS,
+  });
+  await sleep(100);
+  return [];
 };
