@@ -1,7 +1,7 @@
 "use client";
 
 import { chatTextRequest } from "@/ai/chat";
-import { fakeCorrectionJsonRequest } from "@/ai/correction-json";
+import { correctionJsonRequest } from "@/ai/correction-json";
 import { recipeRequest } from "@/ai/recipe";
 import { splitTextRequest } from "@/ai/split";
 import { Button } from "@/components/ui/button";
@@ -68,11 +68,9 @@ export default function Chat({ conversationId }: { conversationId: string }) {
         isLoading: true,
       };
       state.addCorrection(correction);
-      fakeCorrectionJsonRequest(selectedModelId, input, (correctionResult) => {
-        console.debug(correctionResult);
-        state.updateCorrection(correction.id, {
-          items: correctionResult.corrections,
-        });
+      correctionJsonRequest(selectedModelId, input, (correctionItem) => {
+        console.debug(correctionItem);
+        state.addCorrectionItem(correction.id, correctionItem);
       })
         .then(() => {
           state.updateCorrection(correction.id, {

@@ -63,6 +63,10 @@ interface ChatState {
 
   // Corrections
   addCorrection: (correction: CorrectionType) => void;
+  addCorrectionItem: (
+    correctionId: string,
+    correctionItem: CorrectionType["items"][number]
+  ) => void;
   updateCorrection: (
     id: string,
     correction: Partial<Omit<CorrectionType, "id" | "createdAt">>
@@ -253,6 +257,20 @@ export const useChatStore = create<ChatState>((set) => ({
     }));
   },
 
+  addCorrectionItem: (
+    correctionId: string,
+    correctionItem: CorrectionType["items"][number]
+  ) => {
+    set((state) => ({
+      corrections: {
+        ...state.corrections,
+        [correctionId]: {
+          ...state.corrections[correctionId],
+          items: [...state.corrections[correctionId].items, correctionItem],
+        },
+      },
+    }));
+  },
   updateCorrection: (
     id: string,
     correction: Partial<Omit<CorrectionType, "id" | "createdAt">>
