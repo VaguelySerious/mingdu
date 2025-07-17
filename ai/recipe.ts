@@ -37,6 +37,9 @@ export const streamRecipeRequest = async (modelId: ModelType) => {
             steps: z.array(z.string()),
           }),
         }),
+        onFinish: (object) => {
+          console.debug("recipe object done", object);
+        },
         prompt: "Generate a lasagna recipe.",
       });
       for await (const partialObject of partialObjectStream) {
@@ -60,6 +63,9 @@ export const streamRecipeArrayRequest = async (modelId: ModelType) => {
           quantity: z.string().describe("The quantity of the ingredient"),
           unit: z.string().describe("The unit of the ingredient"),
         }),
+        onFinish: (object) => {
+          console.debug("recipe array object done", object);
+        },
         prompt: "Generate 10 ingredients for a lasagna recipe.",
       });
       for await (const element of elementStream) {
