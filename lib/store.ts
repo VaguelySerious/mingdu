@@ -1,6 +1,7 @@
 import { defaultModelId, ModelType } from "@/ai/provider";
 import { omit } from "lodash-es";
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 export type ConversationType = {
   id: string;
@@ -73,213 +74,221 @@ interface ChatState {
   ) => void;
 }
 
-export const useChatStore = create<ChatState>((set) => ({
-  conversations: {},
-  messages: {},
-  corrections: {},
-  currentConversationId: null,
-  selectedModelId: defaultModelId,
+export const useChatStore = create<ChatState>()(
+  persist(
+    (set) => ({
+      conversations: {},
+      messages: {},
+      corrections: {},
+      currentConversationId: null,
+      selectedModelId: defaultModelId,
 
-  selectConversation: (id: string | null) => {
-    set({ currentConversationId: id });
-  },
-
-  setSelectedModelId: (modelId: ModelType) => {
-    set({ selectedModelId: modelId });
-  },
-
-  createConversation: (id: string) => {
-    set((state) => ({
-      conversations: {
-        ...state.conversations,
-        [id]: {
-          id,
-          title: "",
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-          messageIds: [],
-        },
+      selectConversation: (id: string | null) => {
+        set({ currentConversationId: id });
       },
-    }));
-  },
 
-  updateConversation: (
-    id: string,
-    conversation: Partial<Omit<ConversationType, "id" | "createdAt">>
-  ) => {
-    set((state) => ({
-      conversations: {
-        ...state.conversations,
-        [id]: { ...state.conversations[id], ...conversation },
+      setSelectedModelId: (modelId: ModelType) => {
+        set({ selectedModelId: modelId });
       },
-    }));
-  },
 
-  addMessageToConversation: (conversationId: string, messageId: string) => {
-    set((state) => ({
-      conversations: {
-        ...state.conversations,
-        [conversationId]: {
-          ...state.conversations[conversationId],
-          messageIds: [
-            ...state.conversations[conversationId].messageIds,
-            messageId,
-          ],
-        },
-      },
-    }));
-  },
-
-  deleteConversation: (id: string) => {
-    set((state) => {
-      const messageIds = state.conversations[id]?.messageIds ?? [];
-      return {
-        currentConversationId:
-          state.currentConversationId === id
-            ? null
-            : state.currentConversationId,
-        conversations: { ...omit(state.conversations, id) },
-        messages: { ...omit(state.messages, messageIds) },
-      };
-    });
-  },
-
-  addMessage: (conversationId: string, message: MessageType) => {
-    set((state) => ({
-      conversations: {
-        ...state.conversations,
-        [conversationId]: {
-          ...state.conversations[conversationId],
-          updatedAt: Date.now(),
-          messageIds: [
-            ...state.conversations[conversationId].messageIds,
-            message.id,
-          ],
-        },
-      },
-      messages: {
-        ...state.messages,
-        [message.id]: message,
-      },
-    }));
-  },
-
-  updateMessage: (
-    id: string,
-    message: Partial<Omit<MessageType, "id" | "createdAt">>
-  ) => {
-    set((state) => {
-      const conversation = Object.values(state.conversations).find((c) =>
-        c.messageIds.includes(id)
-      );
-      return {
-        conversations: conversation
-          ? {
-              ...state.conversations,
-              [conversation.id]: {
-                ...conversation,
-                updatedAt: Date.now(),
-              },
-            }
-          : state.conversations,
-        messages: {
-          ...state.messages,
-          [id]: { ...state.messages[id], ...message },
-        },
-      };
-    });
-  },
-
-  addWordToMessage: (messageId: string, word: string) => {
-    set((state) => {
-      const conversation = Object.values(state.conversations).find((c) =>
-        c.messageIds.includes(messageId)
-      );
-      return {
-        conversations: conversation
-          ? {
-              ...state.conversations,
-              [conversation.id]: {
-                ...conversation,
-                updatedAt: Date.now(),
-              },
-            }
-          : state.conversations,
-        messages: {
-          ...state.messages,
-          [messageId]: {
-            ...state.messages[messageId],
-            words: [...state.messages[messageId].words, word],
+      createConversation: (id: string) => {
+        set((state) => ({
+          conversations: {
+            ...state.conversations,
+            [id]: {
+              id,
+              title: "",
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
+              messageIds: [],
+            },
           },
-        },
-      };
-    });
-  },
+        }));
+      },
 
-  deleteMessage: (id: string) => {
-    set((state) => {
-      const conversationForThisMessage = Object.values(
-        state.conversations
-      ).find((conversation) => conversation.messageIds.includes(id));
+      updateConversation: (
+        id: string,
+        conversation: Partial<Omit<ConversationType, "id" | "createdAt">>
+      ) => {
+        set((state) => ({
+          conversations: {
+            ...state.conversations,
+            [id]: { ...state.conversations[id], ...conversation },
+          },
+        }));
+      },
 
-      const conversations = { ...state.conversations };
-      if (conversationForThisMessage) {
-        conversationForThisMessage.messageIds =
-          conversationForThisMessage.messageIds.filter(
-            (messageId) => messageId !== id
+      addMessageToConversation: (conversationId: string, messageId: string) => {
+        set((state) => ({
+          conversations: {
+            ...state.conversations,
+            [conversationId]: {
+              ...state.conversations[conversationId],
+              messageIds: [
+                ...state.conversations[conversationId].messageIds,
+                messageId,
+              ],
+            },
+          },
+        }));
+      },
+
+      deleteConversation: (id: string) => {
+        set((state) => {
+          const messageIds = state.conversations[id]?.messageIds ?? [];
+          return {
+            currentConversationId:
+              state.currentConversationId === id
+                ? null
+                : state.currentConversationId,
+            conversations: { ...omit(state.conversations, id) },
+            messages: { ...omit(state.messages, messageIds) },
+          };
+        });
+      },
+
+      addMessage: (conversationId: string, message: MessageType) => {
+        set((state) => ({
+          conversations: {
+            ...state.conversations,
+            [conversationId]: {
+              ...state.conversations[conversationId],
+              updatedAt: Date.now(),
+              messageIds: [
+                ...state.conversations[conversationId].messageIds,
+                message.id,
+              ],
+            },
+          },
+          messages: {
+            ...state.messages,
+            [message.id]: message,
+          },
+        }));
+      },
+
+      updateMessage: (
+        id: string,
+        message: Partial<Omit<MessageType, "id" | "createdAt">>
+      ) => {
+        set((state) => {
+          const conversation = Object.values(state.conversations).find((c) =>
+            c.messageIds.includes(id)
           );
-        conversations[conversationForThisMessage.id] =
-          conversationForThisMessage;
-      }
-
-      return {
-        messages: omit(state.messages, id),
-        conversations,
-      };
-    });
-  },
-
-  updateConversationTitle: (id: string, title: string) => {
-    set((state) => ({
-      conversations: {
-        ...state.conversations,
-        [id]: { ...state.conversations[id], title },
+          return {
+            conversations: conversation
+              ? {
+                  ...state.conversations,
+                  [conversation.id]: {
+                    ...conversation,
+                    updatedAt: Date.now(),
+                  },
+                }
+              : state.conversations,
+            messages: {
+              ...state.messages,
+              [id]: { ...state.messages[id], ...message },
+            },
+          };
+        });
       },
-    }));
-  },
 
-  addCorrection: (correction: CorrectionType) => {
-    set((state) => ({
-      corrections: {
-        ...state.corrections,
-        [correction.id]: correction,
+      addWordToMessage: (messageId: string, word: string) => {
+        set((state) => {
+          const conversation = Object.values(state.conversations).find((c) =>
+            c.messageIds.includes(messageId)
+          );
+          return {
+            conversations: conversation
+              ? {
+                  ...state.conversations,
+                  [conversation.id]: {
+                    ...conversation,
+                    updatedAt: Date.now(),
+                  },
+                }
+              : state.conversations,
+            messages: {
+              ...state.messages,
+              [messageId]: {
+                ...state.messages[messageId],
+                words: [...state.messages[messageId].words, word],
+              },
+            },
+          };
+        });
       },
-    }));
-  },
 
-  addCorrectionItem: (
-    correctionId: string,
-    correctionItem: CorrectionType["items"][number]
-  ) => {
-    set((state) => ({
-      corrections: {
-        ...state.corrections,
-        [correctionId]: {
-          ...state.corrections[correctionId],
-          items: [...state.corrections[correctionId].items, correctionItem],
-        },
+      deleteMessage: (id: string) => {
+        set((state) => {
+          const conversationForThisMessage = Object.values(
+            state.conversations
+          ).find((conversation) => conversation.messageIds.includes(id));
+
+          const conversations = { ...state.conversations };
+          if (conversationForThisMessage) {
+            conversationForThisMessage.messageIds =
+              conversationForThisMessage.messageIds.filter(
+                (messageId) => messageId !== id
+              );
+            conversations[conversationForThisMessage.id] =
+              conversationForThisMessage;
+          }
+
+          return {
+            messages: omit(state.messages, id),
+            conversations,
+          };
+        });
       },
-    }));
-  },
-  updateCorrection: (
-    id: string,
-    correction: Partial<Omit<CorrectionType, "id" | "createdAt">>
-  ) => {
-    set((state) => ({
-      corrections: {
-        ...state.corrections,
-        [id]: { ...state.corrections[id], ...correction },
+
+      updateConversationTitle: (id: string, title: string) => {
+        set((state) => ({
+          conversations: {
+            ...state.conversations,
+            [id]: { ...state.conversations[id], title },
+          },
+        }));
       },
-    }));
-  },
-}));
+
+      addCorrection: (correction: CorrectionType) => {
+        set((state) => ({
+          corrections: {
+            ...state.corrections,
+            [correction.id]: correction,
+          },
+        }));
+      },
+
+      addCorrectionItem: (
+        correctionId: string,
+        correctionItem: CorrectionType["items"][number]
+      ) => {
+        set((state) => ({
+          corrections: {
+            ...state.corrections,
+            [correctionId]: {
+              ...state.corrections[correctionId],
+              items: [...state.corrections[correctionId].items, correctionItem],
+            },
+          },
+        }));
+      },
+      updateCorrection: (
+        id: string,
+        correction: Partial<Omit<CorrectionType, "id" | "createdAt">>
+      ) => {
+        set((state) => ({
+          corrections: {
+            ...state.corrections,
+            [id]: { ...state.corrections[id], ...correction },
+          },
+        }));
+      },
+    }),
+    {
+      name: "food-storage", // name of the item in the storage (must be unique)
+      storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+    }
+  )
+);
