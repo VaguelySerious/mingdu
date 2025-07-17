@@ -11,8 +11,9 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^1.2.12",
-    "@ai-sdk/openai": "^1.3.23",
+    "@ai-sdk/anthropic": "^2.0.0-beta.7",
+    "@ai-sdk/openai": "^2.0.0-beta.9",
+    "@ai-sdk/provider": "^2.0.0-beta.1",
     "@opentelemetry/api-logs": "^0.200.0",
     "@opentelemetry/instrumentation": "^0.200.0",
     "@opentelemetry/sdk-logs": "^0.200.0",
@@ -22,7 +23,7 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@vercel/analytics": "^1.5.0",
     "@vercel/otel": "^1.11.0",
-    "ai": "^4.3.17",
+    "ai": "^5.0.0-beta.23",
     "autoevals": "^0.0.127",
     "braintrust": "^0.0.198",
     "class-variance-authority": "^0.7.1",

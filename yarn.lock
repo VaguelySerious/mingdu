@@ -2,21 +2,21 @@
 # yarn lockfile v1
 
 
-"@ai-sdk/anthropic@^1.2.12":
-  version "1.2.12"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-1.2.12.tgz#80a4b2527c6bb120778fbc83da4af775aae953a5"
-  integrity sha512-YSzjlko7JvuiyQFmI9RN1tNZdEiZxc+6xld/0tq/VkJaHpEzGAb1yiNxxvmYVcjvfu/PcvCxAAYXmTYQQ63IHQ==
+"@ai-sdk/anthropic@^2.0.0-beta.6":
+  version "2.0.0-canary.19"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/anthropic/-/anthropic-2.0.0-canary.19.tgz#df5717d85d3c4cde4ad42e6fbc5d3bd354ee6859"
+  integrity sha512-uU8UeRmzKfxmaw7x/qL4hGjysPKzzttORx82dv+24wzoxkitYn9sjn2Mu3l1Q3jzbNC/wkyMRQDs831FggukKw==
   dependencies:
-    "@ai-sdk/provider" "1.1.3"
-    "@ai-sdk/provider-utils" "2.2.8"
+    "@ai-sdk/provider" "2.0.0-canary.14"
+    "@ai-sdk/provider-utils" "3.0.0-canary.19"
 
-"@ai-sdk/openai@^1.3.23":
-  version "1.3.23"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-1.3.23.tgz#77e91a74029532bae7b6f5a5dfcc90d9bc33c9f1"
-  integrity sha512-86U7rFp8yacUAOE/Jz8WbGcwMCqWvjK33wk5DXkfnAOEn3mx2r7tNSJdjukQFZbAK97VMXGPPHxF+aEARDXRXQ==
+"@ai-sdk/openai@^2.0.0-beta.9":
+  version "2.0.0-canary.20"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/openai/-/openai-2.0.0-canary.20.tgz#e8285f5df990830a98f04520ebedfa7ce6f6462d"
+  integrity sha512-AipaQeOz/nIPTtZLJaqG9sxf8zWqZ1UGLG1QOLhNpWwSBDXPVw5k0cWhLtReuZrL/ncKvL6BrGN9aEZLqcmWAg==
   dependencies:
-    "@ai-sdk/provider" "1.1.3"
-    "@ai-sdk/provider-utils" "2.2.8"
+    "@ai-sdk/provider" "2.0.0-canary.14"
+    "@ai-sdk/provider-utils" "3.0.0-canary.19"
 
 "@ai-sdk/provider-utils@1.0.22":
   version "1.0.22"
@@ -28,14 +28,14 @@
     nanoid "^3.3.7"
     secure-json-parse "^2.7.0"
 
-"@ai-sdk/provider-utils@2.2.8":
-  version "2.2.8"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-2.2.8.tgz#ad11b92d5a1763ab34ba7b5fc42494bfe08b76d1"
-  integrity sha512-fqhG+4sCVv8x7nFzYnFo19ryhAa3w096Kmc3hWxMQfW/TubPOmt3A6tYZhl4mUfQWWQMsuSkLrtjlWuXBVSGQA==
+"@ai-sdk/provider-utils@3.0.0-canary.19":
+  version "3.0.0-canary.19"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-3.0.0-canary.19.tgz#53b10f0bf068cc2059a3e1881c35822cfeb28682"
+  integrity sha512-4IJw6/wkWYLYfFYPvCs5go0L/sBRZsIRW1l/R6LniF4WjAH2+R4dMbESgBmzx+Z2+W+W6gFeK8dnQByn7vaA/w==
   dependencies:
-    "@ai-sdk/provider" "1.1.3"
-    nanoid "^3.3.8"
-    secure-json-parse "^2.7.0"
+    "@ai-sdk/provider" "2.0.0-canary.14"
+    "@standard-schema/spec" "^1.0.0"
+    zod-to-json-schema "^3.24.1"
 
 "@ai-sdk/provider@0.0.26":
   version "0.0.26"
@@ -44,7 +44,14 @@
   dependencies:
     json-schema "^0.4.0"
 
-"@ai-sdk/provider@1.1.3", "@ai-sdk/provider@^1.0.1":
+"@ai-sdk/provider@2.0.0-canary.14", "@ai-sdk/provider@^2.0.0-beta.1":
+  version "2.0.0-canary.14"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-2.0.0-canary.14.tgz#7e8c57282ae0eaa7358670ad71f619d69002c8e1"
+  integrity sha512-aN83hjdjDCyhkOdulwMsxmGb91owS+bCSe6FWg1TEwusNM35vv020nY//Gid/0NdIpVkZJGzAajgCWrnno2zzA==
+  dependencies:
+    json-schema "^0.4.0"
+
+"@ai-sdk/provider@^1.0.1":
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-1.1.3.tgz#ebdda8077b8d2b3f290dcba32c45ad19b2704681"
   integrity sha512-qZMxYJ0qqX/RfnuIaab+zp8UAeJn/ygXXAffR5I4N0n1IrvA6qBsjc8hXLmBiMV2zoXlifkacF7sEFnYnjBcqg==
@@ -58,16 +65,6 @@
   dependencies:
     "@ai-sdk/provider-utils" "1.0.22"
     "@ai-sdk/ui-utils" "0.0.50"
-    swr "^2.2.5"
-    throttleit "2.1.0"
-
-"@ai-sdk/react@1.2.12":
-  version "1.2.12"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/react/-/react-1.2.12.tgz#f4250b6df566b170af98a71d5708b52108dd0ce1"
-  integrity sha512-jK1IZZ22evPZoQW3vlkZ7wvjYGYF+tRBKXtrcolduIkQ/m/sOAVcVeVDUDvh1T91xCnWCdUGCPZg2avZ90mv3g==
-  dependencies:
-    "@ai-sdk/provider-utils" "2.2.8"
-    "@ai-sdk/ui-utils" "1.2.11"
     swr "^2.2.5"
     throttleit "2.1.0"
 
@@ -98,15 +95,6 @@
     json-schema "^0.4.0"
     secure-json-parse "^2.7.0"
     zod-to-json-schema "^3.23.3"
-
-"@ai-sdk/ui-utils@1.2.11":
-  version "1.2.11"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/ui-utils/-/ui-utils-1.2.11.tgz#4f815589d08d8fef7292ade54ee5db5d09652603"
-  integrity sha512-3zcwCc8ezzFlwp3ZD15wAPjf2Au4s3vAbKsXQVyhxODHcmu0iyPO2Eua6D/vicq/AUm/BAo60r97O6HU+EI0+w==
-  dependencies:
-    "@ai-sdk/provider" "1.1.3"
-    "@ai-sdk/provider-utils" "2.2.8"
-    zod-to-json-schema "^3.24.1"
 
 "@ai-sdk/vue@0.0.59":
   version "0.0.59"
@@ -1285,6 +1273,11 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.12.0.tgz#326a7b46f6d4cfa54ae25bb888551697873069b4"
   integrity sha512-5EwMtOqvJMMa3HbmxLlF74e+3/HhwBTMcvt3nqVJgGCozO6hzIPOBlwm8mGVNR9SN2IJpxSnlxczyDjcn7qIyw==
 
+"@standard-schema/spec@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@standard-schema/spec/-/spec-1.0.0.tgz#f193b73dc316c4170f2e82a881da0f550d551b9c"
+  integrity sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==
+
 "@swc/counter@0.1.3":
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/@swc/counter/-/counter-0.1.3.tgz#cc7463bd02949611c6329596fccd2b0ec782b0e9"
@@ -1953,17 +1946,14 @@ ai@^3.2.16:
     secure-json-parse "^2.7.0"
     zod-to-json-schema "^3.23.3"
 
-ai@^4.3.17:
-  version "4.3.17"
-  resolved "https://registry.yarnpkg.com/ai/-/ai-4.3.17.tgz#eef03a7d1af338fb6001dee7c8adab65f4ff368d"
-  integrity sha512-uWqIQ94Nb1GTYtYElGHegJMOzv3r2mCKNFlKrqkft9xrfvIahTI5OdcnD5U9612RFGuUNGmSDTO1/YRNFXobaQ==
+ai@^5.0.0-beta.21:
+  version "5.0.0-canary.24"
+  resolved "https://registry.yarnpkg.com/ai/-/ai-5.0.0-canary.24.tgz#26b4a22fc45dcccee61677c1571fccd6a271a24e"
+  integrity sha512-vqaMmM6XFwjz9mNjox9ehjkWFwXbSchhor5MiqgKZ1qRyoTvoYzAt6oCZwg5kN5jXNQ3rZVuyE8N3BbPbwma2Q==
   dependencies:
-    "@ai-sdk/provider" "1.1.3"
-    "@ai-sdk/provider-utils" "2.2.8"
-    "@ai-sdk/react" "1.2.12"
-    "@ai-sdk/ui-utils" "1.2.11"
+    "@ai-sdk/provider" "2.0.0-canary.14"
+    "@ai-sdk/provider-utils" "3.0.0-canary.19"
     "@opentelemetry/api" "1.9.0"
-    jsondiffpatch "0.6.0"
 
 ajv@^6.12.4:
   version "6.12.6"
@@ -4654,7 +4644,7 @@ mustache@^4.2.0:
   resolved "https://registry.yarnpkg.com/mustache/-/mustache-4.2.0.tgz#e5892324d60a12ec9c2a73359edca52972bf6f64"
   integrity sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==
 
-nanoid@^3.3.11, nanoid@^3.3.6, nanoid@^3.3.7, nanoid@^3.3.8:
+nanoid@^3.3.11, nanoid@^3.3.6, nanoid@^3.3.7:
   version "3.3.11"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.11.tgz#4f4f112cefbe303202f2199838128936266d185b"
   integrity sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==
