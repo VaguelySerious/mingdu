@@ -19,36 +19,29 @@ const CORRECTION_SYSTEM_PROMPT = [
 
 const TEMPERATURE = 0.2;
 
-const CORRECTION_ITEM_SCHEMA =
-  // z.object({
-  // corrections: z.array(
-  z.object({
-    original: z
-      .string()
-      .describe(
-        "Copy of the minimal original substring that needs correction."
-      ),
-    correction: z.string().describe("The corrected substring"),
-    explanation: z
-      .string()
-      .describe(
-        [
-          `Additional information, using minimal Mandarin, answering questions`,
-          `such as what makes this correction necessary, what would be other good examples, what would the uncorrected`,
-          `text falsely convey?`,
-        ].join(" ")
-      ),
-  });
-//   ),
-// });
+const CORRECTION_ITEM_SCHEMA = z.object({
+  original: z
+    .string()
+    .describe("Copy of the minimal original substring that needs correction."),
+  correction: z.string().describe("The corrected substring"),
+  explanation: z
+    .string()
+    .describe(
+      [
+        `Additional information, using minimal Mandarin, answering questions`,
+        `such as what makes this correction necessary, what would be other good examples, what would the uncorrected`,
+        `text falsely convey?`,
+      ].join(" ")
+    ),
+});
 
-type CorrectionItemType = z.infer<typeof CORRECTION_ITEM_SCHEMA>;
+export type CorrectionZodItemType = z.infer<typeof CORRECTION_ITEM_SCHEMA>;
 
 export const correctionJsonRequest = (
   modelId: ModelType,
   userMessage: string,
-  onCorrectionItem?: (correctionItem: CorrectionItemType) => void
-): Promise<CorrectionItemType[]> => {
+  onCorrectionItem?: (correctionItem: CorrectionZodItemType) => void
+): Promise<CorrectionZodItemType[]> => {
   return new Promise(async (resolve, reject) => {
     try {
       const model = getAIProvider(getProviderType(modelId), modelId);
@@ -74,39 +67,11 @@ export const correctionJsonRequest = (
 
       for await (const element of elementStream) {
         console.debug("element", element);
-        onCorrectionItem?.(element as CorrectionItemType);
+        onCorrectionItem?.(element);
       }
       console.debug("End of stream");
     } catch (e) {
       reject(e);
     }
   });
-};
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const FAKE_CORRECTIONS = [
-  {
-    original: "我刚刚的爱好。",
-    correction: "我最近的爱好。",
-    explanation: `刚刚"是指刚才，"最近"更合适。`,
-  },
-  {
-    original: "骑一个电动独轮车",
-    correction: "骑电动独轮车",
-    explanation: `不需要"一个"。`,
-  },
-];
-
-export const fakeCorrectionJsonRequest = async (
-  modelId: ModelType,
-  userMessage: string,
-  onCorrectionItem?: (correctionItem: CorrectionItemType) => void
-): Promise<CorrectionItemType[]> => {
-  await sleep(1000);
-  onCorrectionItem?.(FAKE_CORRECTIONS[0]);
-  await sleep(1000);
-  onCorrectionItem?.(FAKE_CORRECTIONS[1]);
-  await sleep(100);
-  return [];
 };

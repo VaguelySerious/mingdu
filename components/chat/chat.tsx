@@ -2,7 +2,12 @@
 
 import { chatTextRequest } from "@/ai/chat";
 import { correctionJsonRequest } from "@/ai/correction-json";
-import { recipeRequest } from "@/ai/recipe";
+import { ModelType } from "@/ai/provider";
+import {
+  generateRecipeRequest,
+  streamRecipeArrayRequest,
+  streamRecipeRequest,
+} from "@/ai/recipe";
 import { splitTextRequest } from "@/ai/split";
 import { Button } from "@/components/ui/button";
 import { sendSignal, SIGNAL_TOPICS } from "@/lib/hooks/use-signals";
@@ -159,12 +164,34 @@ export default function Chat({ conversationId }: { conversationId: string }) {
           stop={stop}
         />
       </form>
-      <Button
-        className="w-[100px] mx-auto items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
-        onClick={() => recipeRequest(selectedModelId)}
-      >
-        Recipe
-      </Button>
+      {[ModelType.CLAUDE_3_5_HAIKU, ModelType.GPT_4_1_NANO].map((modelId) => (
+        <div
+          className="flex gap-2 mx-auto items-center justify-center mb-2"
+          key={modelId}
+        >
+          <Button
+            size="sm"
+            className=" bg-blue-600 hover:bg-blue-700 text-white text-xs"
+            onClick={() => generateRecipeRequest(modelId)}
+          >
+            Generate Recipe ({modelId.slice(0, 6)})
+          </Button>
+          <Button
+            size="sm"
+            className=" bg-blue-600 hover:bg-blue-700 text-white text-xs"
+            onClick={() => streamRecipeRequest(modelId)}
+          >
+            Stream Recipe ({modelId.slice(0, 6)})
+          </Button>
+          <Button
+            size="sm"
+            className=" bg-blue-600 hover:bg-blue-700 text-white text-xs"
+            onClick={() => streamRecipeArrayRequest(modelId)}
+          >
+            Stream Recipe Array ({modelId.slice(0, 6)})
+          </Button>
+        </div>
+      ))}
     </div>
   );
 }
