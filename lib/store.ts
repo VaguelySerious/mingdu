@@ -22,7 +22,11 @@ export type MessageType = {
 export type CorrectionType = {
   id: string;
   messageId: string;
-  words: string[];
+  items: {
+    original: string;
+    correction: string;
+    explanation: string;
+  }[];
   createdAt: number;
   isLoading?: boolean;
   error?: string;
@@ -59,6 +63,14 @@ interface ChatState {
 
   // Corrections
   addCorrection: (correction: CorrectionType) => void;
+  addCorrectionItem: (
+    correctionId: string,
+    correctionItem: CorrectionType["items"][number]
+  ) => void;
+  updateCorrection: (
+    id: string,
+    correction: Partial<Omit<CorrectionType, "id" | "createdAt">>
+  ) => void;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -241,6 +253,32 @@ export const useChatStore = create<ChatState>((set) => ({
       corrections: {
         ...state.corrections,
         [correction.id]: correction,
+      },
+    }));
+  },
+
+  addCorrectionItem: (
+    correctionId: string,
+    correctionItem: CorrectionType["items"][number]
+  ) => {
+    set((state) => ({
+      corrections: {
+        ...state.corrections,
+        [correctionId]: {
+          ...state.corrections[correctionId],
+          items: [...state.corrections[correctionId].items, correctionItem],
+        },
+      },
+    }));
+  },
+  updateCorrection: (
+    id: string,
+    correction: Partial<Omit<CorrectionType, "id" | "createdAt">>
+  ) => {
+    set((state) => ({
+      corrections: {
+        ...state.corrections,
+        [id]: { ...state.corrections[id], ...correction },
       },
     }));
   },

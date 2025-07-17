@@ -19,41 +19,35 @@ const CORRECTION_SYSTEM_PROMPT = [
 
 const TEMPERATURE = 0.2;
 
-const CORRECTION_SCHEMA = z.object({
-  corrections: z.array(
-    z.string()
-    // z.object({
-    //   original: z
-    //     .string()
-    //     .describe(
-    //       "Copy of the minimal original substring that needs correction."
-    //     ),
-    //   correction: z.string().describe("The corrected substring"),
-    //   explanation: z
-    //     .string()
-    //     .describe(
-    //       [
-    //         `Additional information, using minimal Mandarin, answering questions`,
-    //         `such as what makes this correction necessary, what would be other good examples, what would the uncorrected`,
-    //         `text falsely convey?`,
-    //       ].join(" ")
-    //     ),
-    // })
-  ),
+const CORRECTION_ITEM_SCHEMA = z.object({
+  original: z
+    .string()
+    .describe("Copy of the minimal original substring that needs correction."),
+  correction: z.string().describe("The corrected substring"),
+  explanation: z
+    .string()
+    .describe(
+      [
+        `Additional information, using minimal Mandarin, answering questions`,
+        `such as what makes this correction necessary, what would be other good examples, what would the uncorrected`,
+        `text falsely convey?`,
+      ].join(" ")
+    ),
 });
 
-type CorrectionItemType = z.infer<typeof CORRECTION_SCHEMA>;
+export type CorrectionZodItemType = z.infer<typeof CORRECTION_ITEM_SCHEMA>;
 
 export const correctionJsonRequest = (
   modelId: ModelType,
   userMessage: string,
-  onCorrectionItem?: (correctionItem: CorrectionItemType) => void
-): Promise<CorrectionItemType[]> => {
+  onCorrectionItem?: (correctionItem: CorrectionZodItemType) => void
+): Promise<CorrectionZodItemType[]> => {
   return new Promise(async (resolve, reject) => {
     try {
       const model = getAIProvider(getProviderType(modelId), modelId);
-      const { partialObjectStream } = await streamObject({
+      const { elementStream } = await streamObject({
         model,
+        output: "array",
         system: CORRECTION_SYSTEM_PROMPT,
         messages: [
           {
@@ -62,7 +56,7 @@ export const correctionJsonRequest = (
           },
         ],
         temperature: TEMPERATURE,
-        schema: CORRECTION_SCHEMA,
+        schema: CORRECTION_ITEM_SCHEMA,
         onError: (error) => {
           reject(error);
         },
@@ -71,9 +65,9 @@ export const correctionJsonRequest = (
         },
       });
 
-      for await (const partialObject of partialObjectStream) {
-        console.debug("partialObject", partialObject);
-        onCorrectionItem?.(partialObject as CorrectionItemType);
+      for await (const element of elementStream) {
+        console.debug("element", element);
+        onCorrectionItem?.(element);
       }
       console.debug("End of stream");
     } catch (e) {

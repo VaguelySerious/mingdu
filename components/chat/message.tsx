@@ -3,21 +3,13 @@
 import { AnimatePresence, motion } from "motion/react";
 import { memo } from "react";
 
+import { wordsAndCorrectionsToSpans } from "@/lib/arrayspan";
 import { useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { SparklesIcon } from "lucide-react";
-import { SpinnerIcon } from "../icons";
-import { Word } from "./word";
-
-const Spinner = () => (
-  <div className="flex flex-row gap-2 items-center">
-    <div className="font-medium text-sm">Thinking...</div>
-    <div className="animate-spin">
-      <SpinnerIcon />
-    </div>
-  </div>
-);
+import { Spinner } from "../ui/spinner-alternative";
+import { WordSpan } from "./wordspan";
 
 const PurePreviewMessage = ({
   id,
@@ -34,6 +26,11 @@ const PurePreviewMessage = ({
   const shouldShowLoading =
     isLatestMessage && loadingStates.includes(queryStatus);
 
+  const correction = useChatStore((state) =>
+    Object.values(state.corrections).find((c) => c.messageId === id)
+  );
+  const correctionItems = correction?.items ?? [];
+
   if (error) {
     return (
       <div className="flex flex-col gap-4">
@@ -41,6 +38,8 @@ const PurePreviewMessage = ({
       </div>
     );
   }
+
+  const spans = wordsAndCorrectionsToSpans(words, correctionItems);
 
   return (
     <AnimatePresence key={messageKey}>
@@ -53,7 +52,7 @@ const PurePreviewMessage = ({
       >
         <div
           className={cn(
-            "flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl",
+            "flex gap-1 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl",
             "group-data-[role=user]/message:w-fit"
           )}
         >
@@ -72,19 +71,19 @@ const PurePreviewMessage = ({
           >
             <div
               id={id}
-              className={cn("flex flex-col gap-4", {
+              className={cn("flex flex-wrap gap-1 items-center", {
                 "bg-secondary text-secondary-foreground px-3 py-2 rounded-tl-xl rounded-tr-xl rounded-bl-xl":
                   role === "user",
               })}
             >
-              <div className="flex w-full flex-wrap">
-                {words.map((word, i) => {
-                  const wordKey = `${messageKey}-word-${i}`;
-                  return (
-                    <Word key={wordKey} id={wordKey} role={role} word={word} />
-                  );
-                })}
-              </div>
+              {spans.map((span, i) => (
+                <WordSpan
+                  key={`${messageKey}-span-${i}`}
+                  words={span.words}
+                  messageKey={`${messageKey}-span-${i}`}
+                  correction={span.correction}
+                />
+              ))}
             </div>
           </motion.div>
 
