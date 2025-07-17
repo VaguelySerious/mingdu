@@ -3,77 +3,13 @@
 import { AnimatePresence, motion } from "motion/react";
 import { memo } from "react";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { wordsAndCorrectionsToSpans } from "@/lib/arrayspan";
-import type { CorrectionType } from "@/lib/store";
 import { useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { SparklesIcon } from "lucide-react";
-import { SpinnerIcon } from "../icons";
-import { Word } from "./word";
-
-const Spinner = () => (
-  <div className="flex flex-row gap-2 items-center">
-    <div className="font-medium text-sm">Thinking...</div>
-    <div className="animate-spin">
-      <SpinnerIcon />
-    </div>
-  </div>
-);
-
-const WordSpan = ({
-  words,
-  messageKey,
-  className,
-}: {
-  words: string[];
-  messageKey: string;
-  className?: string;
-}) => {
-  return (
-    <span className={cn("flex w-full flex-wrap", className)}>
-      {words.map((word, i) => {
-        const wordKey = `${messageKey}-word-${i}`;
-        return <Word role="user" id={wordKey} key={wordKey} word={word} />;
-      })}
-    </span>
-  );
-};
-
-const CorrectionSpan = ({
-  words,
-  messageKey,
-  correction,
-}: {
-  words: string[];
-  messageKey: string;
-  correction: CorrectionType["items"][number];
-}) => {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <WordSpan
-          words={words}
-          messageKey={messageKey}
-          className="p-1 flex w-full flex-wrap border-b-2 border-pink-500 cursor-pointer"
-        />
-      </TooltipTrigger>
-      <TooltipContent sideOffset={8}>
-        <div className="max-w-xs text-xs">
-          <div className="font-bold mb-1 text-green-600">
-            修正: {correction.correction}
-          </div>
-          <div className="text-white">{correction.explanation}</div>
-        </div>
-      </TooltipContent>
-    </Tooltip>
-  );
-};
+import { Spinner } from "../ui/spinner-alternative";
+import { WordSpan } from "./wordspan";
 
 const PurePreviewMessage = ({
   id,
@@ -140,22 +76,14 @@ const PurePreviewMessage = ({
                   role === "user",
               })}
             >
-              {spans.map((span, i) =>
-                span.correction ? (
-                  <CorrectionSpan
-                    key={`${messageKey}-span-${i}`}
-                    words={span.words}
-                    messageKey={`${messageKey}-span-${i}`}
-                    correction={span.correction}
-                  />
-                ) : (
-                  <WordSpan
-                    key={`${messageKey}-span-${i}`}
-                    words={span.words}
-                    messageKey={`${messageKey}-span-${i}`}
-                  />
-                )
-              )}
+              {spans.map((span, i) => (
+                <WordSpan
+                  key={`${messageKey}-span-${i}`}
+                  words={span.words}
+                  messageKey={`${messageKey}-span-${i}`}
+                  correction={span.correction}
+                />
+              ))}
             </div>
           </motion.div>
 
