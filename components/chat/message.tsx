@@ -52,7 +52,7 @@ const PurePreviewMessage = ({
       >
         <div
           className={cn(
-            "flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl",
+            "flex gap-1 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl",
             "group-data-[role=user]/message:w-fit"
           )}
         >
@@ -71,7 +71,7 @@ const PurePreviewMessage = ({
           >
             <div
               id={id}
-              className={cn("flex flex-col gap-4", {
+              className={cn("flex flex-wrap gap-1 items-center", {
                 "bg-secondary text-secondary-foreground px-3 py-2 rounded-tl-xl rounded-tr-xl rounded-bl-xl":
                   role === "user",
               })}

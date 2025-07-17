@@ -3,6 +3,7 @@ import { Textarea as ShadcnTextarea } from "@/components/ui/textarea";
 import { QueryStatusType } from "@/lib/types";
 import { ArrowUp } from "lucide-react";
 import { Spinner } from "../ui/spinner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface InputProps {
   input: string;
@@ -46,7 +47,16 @@ export const Textarea = ({
         }}
       />
       <div className="absolute p-4 bottom-2 left-2 flex flex-col gap-2">
-        <div className="text-sm">{QUERY_STATUS_MAP[queryStatus]}</div>
+        <div className="text-sm">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="text-sm">{QUERY_STATUS_MAP[queryStatus]}</div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div>Current Status is {QUERY_STATUS_MAP[queryStatus]}</div>
+            </TooltipContent>
+          </Tooltip>
+        </div>
       </div>
       {queryStatus === "streaming" || queryStatus === "submitted" ? (
         <button

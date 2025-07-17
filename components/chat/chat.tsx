@@ -54,10 +54,14 @@ export default function Chat({ conversationId }: { conversationId: string }) {
       state.addMessage(conversationId, userMessage);
 
       // In parallel, make a request to split the user message into words
-      splitTextRequest(selectedModelId, input).then((words) => {
-        userMessage.words = words;
-        state.updateMessage(userMessage.id, userMessage);
-      });
+      splitTextRequest(selectedModelId, input)
+        .then((words) => {
+          userMessage.words = words;
+          state.updateMessage(userMessage.id, userMessage);
+        })
+        .catch((e) => {
+          console.error("Unable to split text, error:", e);
+        });
 
       // In parallel, make a request to correct the user message
       const correction: CorrectionType = {

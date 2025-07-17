@@ -1,10 +1,6 @@
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import type { CorrectionType } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Word } from "./word";
 
 const DefaultSpan = ({
@@ -17,12 +13,12 @@ const DefaultSpan = ({
   className?: string;
 }) => {
   return (
-    <span className={cn("flex w-full flex-wrap", className)}>
+    <div className={cn("flex flex-wrap", className)}>
       {words.map((word, i) => {
         const wordKey = `${messageKey}-word-${i}`;
         return <Word role="user" id={wordKey} key={wordKey} word={word} />;
       })}
-    </span>
+    </div>
   );
 };
 
@@ -37,11 +33,11 @@ const CorrectionSpan = ({
 }) => {
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
+      <TooltipTrigger>
         <DefaultSpan
           words={words}
           messageKey={messageKey}
-          className="p-1 flex w-full flex-wrap border-b-2 border-pink-500 cursor-pointer"
+          className="p-1 flex flex-wrap border-b-2 border-pink-500 cursor-pointer"
         />
       </TooltipTrigger>
       <TooltipContent sideOffset={8}>
