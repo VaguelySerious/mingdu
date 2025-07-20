@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useChatStore } from "@/lib/store";
 import { generateId } from "ai";
-import { Plus } from "lucide-react";
+import { Plus, Settings } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
 import { ModelPicker } from "../settings/model-picker";
@@ -102,7 +102,23 @@ export function Sidebar() {
           ))}
         </div>
       </div>
-      <ModelPicker />
+      <div className="px-2 pb-6">
+        <ModelPicker />
+        <div className="p-2 flex items-center gap-3 justify-between">
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">User</span>
+            <span className="text-xs text-muted-foreground">
+              HSK 3 progress: 60%
+            </span>
+          </div>
+          {/* Gear setting menu */}
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon">
+              <Settings />
+            </Button>
+          </div>
+        </div>
+      </div>
     </aside>
   );
 }

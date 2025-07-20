@@ -8,7 +8,6 @@ import {
   ModelType,
 } from "@/ai/provider";
 import { useChatStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
 import { useState } from "react";
 import {
   Select,
@@ -52,50 +51,29 @@ export const ModelPicker = () => {
   };
 
   return (
-    <div className="absolute p-4 bottom-2 left-2 flex flex-col gap-2">
-      {/* Provider status bar */}
-      <div className="flex flex-col gap-4 px-3 text-sm">
-        {providers.map((p) => {
-          const hasKey = hasAIKey(p.id as "openai" | "anthropic");
-          return (
-            <Tooltip key={p.id}>
-              <TooltipTrigger asChild>
-                <div
-                  className={cn(
-                    "flex items-center gap-1 cursor-pointer relative"
-                  )}
-                  onClick={() =>
-                    handleProviderClick(p.id as "openai" | "anthropic")
-                  }
-                >
-                  <span>{p.label}</span>
-                  <span>{hasKey ? "✅" : "❌"}</span>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent sideOffset={8}>
-                {hasKey
-                  ? "You have an API key stored for this provider. Click to remove."
-                  : "No API key stored for this provider. Click to add your key."}
-              </TooltipContent>
-            </Tooltip>
-          );
-        })}
-      </div>
-      {/* Model picker */}
-      <Select value={selectedModelId} onValueChange={handleModelChange}>
-        <SelectTrigger className="text-black">
-          <SelectValue placeholder="Select a model" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {Object.values(ModelType).map((modelId) => (
-              <SelectItem key={modelId} value={modelId}>
-                {modelId}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </div>
+    <Select value={selectedModelId} onValueChange={handleModelChange}>
+      <SelectTrigger className="text-black">
+        <SelectValue placeholder="Select a model" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {Object.values(ModelType).map((modelId) => (
+            <SelectItem key={modelId} value={modelId}>
+              {!hasAIKey(getProviderType(modelId)) && (
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span className="text-red-500">❌</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    No API key stored for this provider. Click to add your key.
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              Model: {modelId}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 };
