@@ -1,8 +1,16 @@
 import { MessageType } from "@/lib/store";
+import { cn } from "@/lib/utils";
 import { Suspense } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { DictionaryEntry } from "./dictionary-entry";
 import { Markdown } from "./markdown";
+
+const color_examples: Record<string, string> = {
+  独轮车: "text-red-500",
+  电动: "text-orange-500",
+  铭读: "text-orange-500",
+  一般: "text-yellow-500",
+};
 
 export const Word = ({
   // id,
@@ -35,5 +43,9 @@ export const Word = ({
       </Tooltip>
     );
   }
-  return <span className="ml-1 whitespace-nowrap">{word}</span>;
+  return (
+    <span className={cn("ml-1 whitespace-nowrap", color_examples[word])}>
+      {word}
+    </span>
+  );
 };
