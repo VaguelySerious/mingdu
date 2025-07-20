@@ -33,6 +33,10 @@ export type CorrectionType = {
   error?: string;
 };
 
+export type ProfileType = {
+  name: string;
+};
+
 interface ChatState {
   conversations: Record<string, ConversationType>;
   messages: Record<string, MessageType>;
@@ -40,6 +44,8 @@ interface ChatState {
 
   currentConversationId: string | null;
   selectedModelId: ModelType;
+
+  profile: ProfileType;
 
   // Settings
   setSelectedModelId: (modelId: ModelType) => void;
@@ -72,6 +78,9 @@ interface ChatState {
     id: string,
     correction: Partial<Omit<CorrectionType, "id" | "createdAt">>
   ) => void;
+
+  // Profile settings
+  setProfile: (profile: ProfileType) => void;
 }
 
 export const useChatStore = create<ChatState>()(
@@ -82,6 +91,9 @@ export const useChatStore = create<ChatState>()(
       corrections: {},
       currentConversationId: null,
       selectedModelId: defaultModelId,
+      profile: {
+        name: "Me",
+      },
 
       selectConversation: (id: string | null) => {
         set({ currentConversationId: id });
@@ -284,6 +296,10 @@ export const useChatStore = create<ChatState>()(
             [id]: { ...state.corrections[id], ...correction },
           },
         }));
+      },
+
+      setProfile: (profile: ProfileType) => {
+        set({ profile });
       },
     }),
     {

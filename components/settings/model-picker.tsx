@@ -52,7 +52,7 @@ export const ModelPicker = () => {
 
   return (
     <Select value={selectedModelId} onValueChange={handleModelChange}>
-      <SelectTrigger className="text-black">
+      <SelectTrigger className="text-black w-full">
         <SelectValue placeholder="Select a model" />
       </SelectTrigger>
       <SelectContent>

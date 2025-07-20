@@ -103,7 +103,6 @@ export function Sidebar() {
         </div>
       </div>
       <div className="px-2 pb-6">
-        <ModelPicker />
         <div className="p-2 flex items-center gap-3 justify-between">
           <div className="flex flex-col">
             <span className="text-sm font-medium">User</span>
@@ -111,13 +110,13 @@ export function Sidebar() {
               HSK 3 progress: 60%
             </span>
           </div>
-          {/* Gear setting menu */}
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon">
               <Settings />
             </Button>
           </div>
         </div>
+        <ModelPicker />
       </div>
     </aside>
   );
