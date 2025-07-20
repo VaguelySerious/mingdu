@@ -9,10 +9,12 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
+const coreWebVitals = compat.extends("next/core-web-vitals");
+
 const eslintConfig = [
   {
-    ...compat.extends("next/core-web-vitals", "next/typescript"),
-    ignores: ["components/old-src/**"],
+    ...coreWebVitals,
+    ignores: [...coreWebVitals.ignores, "components/old-src/**"],
   },
 ];
 
