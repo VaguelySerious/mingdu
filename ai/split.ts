@@ -25,6 +25,8 @@ export const splitTextRequest = (
       const { textStream } = streamText({
         model: getAIProvider(provider, modelId),
         system: SPLIT_SYSTEM_PROMPT,
+        // TODO: Pass in all previous messages, so the model can see the context,
+        // and make sure it's cached by IDs
         messages: [{ role: "user", content: inputMessage }],
         temperature: TEMPERATURE,
         onError: (error) => {

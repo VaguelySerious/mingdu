@@ -70,6 +70,8 @@ export default function Chat({ conversationId }: { conversationId: string }) {
         isLoading: true,
       };
       state.addCorrection(correction);
+      // TODO: Corrections need to equally be post-split into words, so that the
+      // tooltips can use dictionary lookups.
       correctionJsonRequest(selectedModelId, input, (correctionItem) => {
         console.debug(correctionItem);
         state.addCorrectionItem(correction.id, correctionItem);
@@ -97,6 +99,7 @@ export default function Chat({ conversationId }: { conversationId: string }) {
 
       const promptMessages: APIMessageType[] = [...messages, userMessage].map(
         (message) => ({
+          id: message.id,
           role: message.role,
           content: message.words.join(""),
         })
