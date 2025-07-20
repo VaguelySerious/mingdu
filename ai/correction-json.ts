@@ -13,6 +13,7 @@ const CORRECTION_SYSTEM_PROMPT = [
   `- "正我的句子" → "纠正我的句子", with explanation "正"这个字单独用不太自然，要用"纠正"或"改正"`,
   `- "我刚刚的爱好" → "我最近的爱好", with explanation "刚刚"是指刚才，"最近"更合适`,
   `- "骑一个电动独轮车" → "骑电动独轮车", with explanation 不需要"一个"`,
+  `If there are no corrections, return an empty array!`,
   `\nYou always split words in your response by pipes ("|"), so the student can more easily look up the words in a dictionary.`,
   `\n${SPLIT_EXAMPLES}`,
 ].join(" ");
@@ -45,6 +46,7 @@ export const correctionJsonRequest = (
   return new Promise(async (resolve, reject) => {
     try {
       const model = getAIProvider(getProviderType(modelId), modelId);
+      const elements: CorrectionZodItemType[] = [];
       const { elementStream } = await streamObject({
         model,
         output: "array",
@@ -61,15 +63,14 @@ export const correctionJsonRequest = (
           reject(error);
         },
         onFinish: (...args) => {
-          console.debug("Finished", ...args);
+          resolve(elements);
         },
       });
 
       for await (const element of elementStream) {
-        console.debug("element", element);
+        elements.push(element);
         onCorrectionItem?.(element);
       }
-      console.debug("End of stream");
     } catch (e) {
       reject(e);
     }

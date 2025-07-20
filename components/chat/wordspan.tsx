@@ -6,14 +6,22 @@ import { Word } from "./word";
 const DefaultSpan = ({
   words,
   messageKey,
+  isCorrection,
   className,
 }: {
   words: string[];
   messageKey: string;
   className?: string;
+  isCorrection?: boolean;
 }) => {
   return (
-    <div className={cn("flex flex-wrap", className)}>
+    <div
+      className={cn(
+        "text-xl flex flex-wrap",
+        isCorrection ? "cursor-pointer" : "pb-1",
+        className
+      )}
+    >
       {words.map((word, i) => {
         const wordKey = `${messageKey}-word-${i}`;
         return <Word role="user" id={wordKey} key={wordKey} word={word} />;
@@ -34,18 +42,24 @@ const CorrectionSpan = ({
   return (
     <Tooltip>
       <TooltipTrigger>
-        <DefaultSpan
-          words={words}
-          messageKey={messageKey}
-          className="p-1 flex flex-wrap border-b-2 border-pink-500 cursor-pointer"
-        />
+        <div className="flex flex-col gap-1">
+          <DefaultSpan
+            isCorrection
+            className="border-b-2 border-red-500 pb-1"
+            words={words}
+            messageKey={messageKey}
+          />
+          <DefaultSpan
+            isCorrection
+            className="text-red-800"
+            words={[correction.correction]}
+            messageKey={`${messageKey}-correction`}
+          />
+        </div>
       </TooltipTrigger>
       <TooltipContent sideOffset={8}>
-        <div className="max-w-xs text-xs">
-          <div className="font-bold mb-1 text-green-600">
-            修正: {correction.correction}
-          </div>
-          <div className="text-white">{correction.explanation}</div>
+        <div className="text-white text-xl">
+          This is a suggested correction. Reason: {correction.explanation}
         </div>
       </TooltipContent>
     </Tooltip>

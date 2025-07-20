@@ -74,14 +74,15 @@ export default function Chat({ conversationId }: { conversationId: string }) {
         console.debug(correctionItem);
         state.addCorrectionItem(correction.id, correctionItem);
       })
-        .then(() => {
-          state.updateCorrection(correction.id, {
-            isLoading: false,
-          });
-        })
         .catch((e) => {
           state.updateCorrection(correction.id, {
             error: e.message,
+          });
+        })
+        .finally(() => {
+          console.debug("finally");
+          state.updateCorrection(correction.id, {
+            isLoading: false,
           });
         });
 

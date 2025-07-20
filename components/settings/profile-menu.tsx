@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useChatStore } from "@/lib/store";
-import { Settings, Trash2, User } from "lucide-react";
+import { Settings, SettingsIcon, Trash2, User } from "lucide-react";
 import { useState } from "react";
 
 export function ProfileMenu() {
@@ -45,12 +45,29 @@ export function ProfileMenu() {
           <Settings className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuItem onClick={handleChangeName}>
           <User className="mr-2 h-4 w-4" />
           Change Name
         </DropdownMenuItem>
         <DropdownMenuSeparator />
+        {/* TODO: Make these into toggle buttons */}
+        <DropdownMenuItem
+          disabled
+          onClick={() => alert("Coming soon!")}
+          className=""
+        >
+          <SettingsIcon className="mr-2 h-4 w-4" />
+          Toggle English corrections
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          disabled
+          onClick={() => alert("Coming soon!")}
+          className=""
+        >
+          <SettingsIcon className="mr-2 h-4 w-4" />
+          Toggle word spacing
+        </DropdownMenuItem>
         <DropdownMenuItem
           disabled={!hasAIKey("openai") && !hasAIKey("anthropic")}
           onClick={handleDeleteApiKeys}
