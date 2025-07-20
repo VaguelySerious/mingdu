@@ -3,16 +3,18 @@ import { ModelType } from "./provider";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const FAKE_CORRECTIONS = [
+const FAKE_CORRECTIONS: CorrectionZodItemType[] = [
   {
     original: "我刚刚的爱好。",
     correction: "我最近的爱好。",
     explanation: `刚刚"是指刚才，"最近"更合适。`,
+    english_explanation: `"刚刚" means "just now", "recently" is more appropriate.`,
   },
   {
     original: "骑一个电动独轮车",
     correction: "骑电动独轮车",
     explanation: `不需要"一个"。`,
+    english_explanation: `"一个" is not needed.`,
   },
 ];
 

@@ -9,6 +9,7 @@ import { QueryStatusType } from "@/lib/types";
 import { CoreMessage as APIMessageType, generateId } from "ai";
 import { useCallback, useEffect, useState } from "react";
 import { InitialScreen } from "../help/initial-screen";
+import { Legend } from "../help/legend";
 import { Messages } from "./messages";
 import { Textarea } from "./textarea";
 
@@ -160,6 +161,8 @@ export default function Chat({ conversationId }: { conversationId: string }) {
           queryStatus={queryStatus}
           stop={stop}
         />
+        {/* TODO: Make this hide-able */}
+        <Legend />
       </form>
       {/* {[ModelType.CLAUDE_3_5_HAIKU, ModelType.GPT_4_1_NANO].map((modelId) => (
         <div
