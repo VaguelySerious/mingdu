@@ -2,14 +2,7 @@
 
 import { chatTextRequest } from "@/ai/chat";
 import { correctionJsonRequest } from "@/ai/correction-json";
-import { ModelType } from "@/ai/provider";
-import {
-  generateRecipeRequest,
-  streamRecipeArrayRequest,
-  streamRecipeRequest,
-} from "@/ai/recipe";
 import { splitTextRequest } from "@/ai/split";
-import { Button } from "@/components/ui/button";
 import { sendSignal, SIGNAL_TOPICS } from "@/lib/hooks/use-signals";
 import { CorrectionType, MessageType, useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
@@ -164,7 +157,7 @@ export default function Chat({ conversationId }: { conversationId: string }) {
           stop={stop}
         />
       </form>
-      {[ModelType.CLAUDE_3_5_HAIKU, ModelType.GPT_4_1_NANO].map((modelId) => (
+      {/* {[ModelType.CLAUDE_3_5_HAIKU, ModelType.GPT_4_1_NANO].map((modelId) => (
         <div
           className="flex gap-2 mx-auto items-center justify-center mb-2"
           key={modelId}
@@ -191,7 +184,7 @@ export default function Chat({ conversationId }: { conversationId: string }) {
             Stream Recipe Array ({modelId.slice(0, 6)})
           </Button>
         </div>
-      ))}
+      ))} */}
     </div>
   );
 }
