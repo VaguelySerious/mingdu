@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  getAIKey,
+  getOrPromptAIKey,
   getProviderType,
   hasAIKey,
   isAnthropicModel,
@@ -36,7 +36,7 @@ export const ModelPicker = () => {
       localStorage.removeItem(`${provider}_API_KEY`);
       setRerender((x) => x + 1);
     } else {
-      getAIKey(provider); // prompts and sets
+      getOrPromptAIKey(provider); // prompts and sets
       setRerender((x) => x + 1);
     }
   };
@@ -46,7 +46,7 @@ export const ModelPicker = () => {
     const missingKey = !hasAIKey(provider);
 
     if (missingKey) {
-      getAIKey(isAnthropicModel(modelId) ? "anthropic" : "openai");
+      getOrPromptAIKey(isAnthropicModel(modelId) ? "anthropic" : "openai");
     }
     setSelectedModelId(modelId as ModelType);
   };

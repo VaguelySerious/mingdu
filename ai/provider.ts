@@ -36,30 +36,33 @@ export enum ModelType {
 }
 
 export const defaultModelId = ModelType.GPT_4_1_NANO;
+export const getAIKey = (provider: "openai" | "anthropic") => {
+  try {
+    return localStorage.getItem(`${provider}_API_KEY`);
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
 
 export const hasAIKey = (provider: "openai" | "anthropic") => {
   return !!getAIKey(provider);
 };
 
-export const getAIKey = (provider: "openai" | "anthropic") => {
-  try {
-    let key = localStorage.getItem(`${provider}_API_KEY`);
-    if (!key) {
-      key = prompt(
-        `Enter your ${provider} API key. It'll be stored in browser localStorage.`
-      );
-      if (key) {
-        setAIKey(provider, key);
-        return key;
-      } else {
-        throw new Error(`No API key provided for ${provider}`);
-      }
-    }
+export const getOrPromptAIKey = (provider: "openai" | "anthropic") => {
+  const key = getAIKey(provider);
+  if (key) {
     return key;
-  } catch (e) {
-    console.error(e);
-    return null;
   }
+
+  const newKey = prompt(
+    `Enter your ${provider} API key. It'll be stored in browser localStorage.`
+  );
+  if (newKey) {
+    setAIKey(provider, newKey);
+    return newKey;
+  }
+  throw new Error(`No API key provided for ${provider}`);
 };
 
 export const setAIKey = (provider: "openai" | "anthropic", key: string) => {
@@ -73,11 +76,11 @@ export const setAIKey = (provider: "openai" | "anthropic", key: string) => {
 export const getAIProvider = (provider: ProviderType, modelId?: ModelType) => {
   if (provider === "openai") {
     return createOpenAI({
-      apiKey: getAIKey("openai") ?? "",
+      apiKey: getOrPromptAIKey("openai") ?? "",
     }).chat(modelId ?? defaultModelId);
   } else if (provider === "anthropic") {
     return createAnthropic({
-      apiKey: getAIKey("anthropic") ?? "",
+      apiKey: getOrPromptAIKey("anthropic") ?? "",
       headers: {
         "anthropic-dangerous-direct-browser-access": "true",
       },
