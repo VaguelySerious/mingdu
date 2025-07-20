@@ -27,6 +27,7 @@ export type CorrectionType = {
     original: string;
     correction: string;
     explanation: string;
+    english_explanation?: string;
   }[];
   createdAt: number;
   isLoading?: boolean;

@@ -34,6 +34,9 @@ const CORRECTION_ITEM_SCHEMA = z.object({
         `text falsely convey?`,
       ].join(" ")
     ),
+  english_explanation: z
+    .string()
+    .describe(`Same as the explanation, but in English.`),
 });
 
 export type CorrectionZodItemType = z.infer<typeof CORRECTION_ITEM_SCHEMA>;
