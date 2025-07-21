@@ -46,6 +46,12 @@ export function Sidebar({ className }: { className?: string }) {
   };
 
   useEffect(() => {
+    if (conversations.length === 0 && !currentConversation) {
+      handleNewConversation();
+    }
+  }, [conversations, handleNewConversation]);
+
+  useEffect(() => {
     if (
       currentConversation &&
       currentConversation.messageIds.length >= 1 &&

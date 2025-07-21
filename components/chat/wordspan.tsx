@@ -9,11 +9,13 @@ const DefaultSpan = ({
   messageKey,
   isCorrection,
   className,
+  isOnlySpan,
 }: {
   words: string[];
   messageKey: string;
   className?: string;
   isCorrection?: boolean;
+  isOnlySpan?: boolean;
 }) => {
   return (
     <div
@@ -25,7 +27,15 @@ const DefaultSpan = ({
     >
       {words.map((word, i) => {
         const wordKey = `${messageKey}-word-${i}`;
-        return <Word role="user" id={wordKey} key={wordKey} word={word} />;
+        return (
+          <Word
+            role="user"
+            id={wordKey}
+            key={wordKey}
+            word={word}
+            className={isOnlySpan ? "whitespace-pre-wrap" : ""}
+          />
+        );
       })}
     </div>
   );
@@ -72,10 +82,12 @@ export const WordSpan = ({
   words,
   messageKey,
   correction,
+  isOnlySpan,
 }: {
   words: string[];
   messageKey: string;
   correction?: CorrectionType["items"][number];
+  isOnlySpan?: boolean;
 }) => {
   if (correction) {
     return (
@@ -86,5 +98,11 @@ export const WordSpan = ({
       />
     );
   }
-  return <DefaultSpan words={words} messageKey={messageKey} />;
+  return (
+    <DefaultSpan
+      isOnlySpan={isOnlySpan}
+      words={words}
+      messageKey={messageKey}
+    />
+  );
 };

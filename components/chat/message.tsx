@@ -83,6 +83,7 @@ const PurePreviewMessage = ({
                 <WordSpan
                   key={`${messageKey}-span-${i}`}
                   words={span.words}
+                  isOnlySpan={spans.length === 1}
                   messageKey={`${messageKey}-span-${i}`}
                   correction={span.correction}
                 />

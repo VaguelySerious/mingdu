@@ -22,15 +22,19 @@ export const Word = ({
   word,
   // withDictLookup = true,
   withMarkdown = false,
+  className,
 }: {
   id: string;
   role: MessageType["role"];
   word: string;
+  className?: string;
   // withDictLookup?: boolean;
   withMarkdown?: boolean;
 }) => {
   const wordContent = (
-    <span className={cn("ml-1 whitespace-nowrap", color_examples[word])}>
+    <span
+      className={cn("ml-1 whitespace-nowrap", className, color_examples[word])}
+    >
       {word}
     </span>
   );
