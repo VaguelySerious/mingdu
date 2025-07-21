@@ -255,15 +255,6 @@ export const useChatStore = create<ChatState>()(
         });
       },
 
-      updateConversationTitle: (id: string, title: string) => {
-        set((state) => ({
-          conversations: {
-            ...state.conversations,
-            [id]: { ...state.conversations[id], title },
-          },
-        }));
-      },
-
       addCorrection: (correction: CorrectionType) => {
         set((state) => ({
           corrections: {

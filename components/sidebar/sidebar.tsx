@@ -57,6 +57,7 @@ export function Sidebar({ className }: { className?: string }) {
       currentConversation.messageIds.length >= 1 &&
       !currentConversation.title
     ) {
+      // TODO: Re-compute from time to time with a small summary AI query
       const message =
         useChatStore.getState().messages[currentConversation.messageIds[0]];
       const content = message.words.join("");
