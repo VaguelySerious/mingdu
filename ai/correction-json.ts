@@ -1,7 +1,7 @@
 import { getAIProvider, getProviderType, ModelType } from "@/ai/provider";
 import { streamObject } from "ai";
 import z from "zod";
-import { SPLIT_EXAMPLES } from "./pipebuffer";
+import { SPLIT_WORDS_PROMPT } from "./pipebuffer";
 
 const CORRECTION_SYSTEM_PROMPT = [
   `You're a Mandarin language tutor AI, designed to correct the student's Mandarin.`,
@@ -14,8 +14,7 @@ const CORRECTION_SYSTEM_PROMPT = [
   `- "我刚刚的爱好" → "我最近的爱好", with explanation "刚刚"是指刚才，"最近"更合适`,
   `- "骑一个电动独轮车" → "骑电动独轮车", with explanation 不需要"一个"`,
   `If there are no corrections, return an empty array!`,
-  `\nYou always split words in your response by pipes ("|"), so the student can more easily look up the words in a dictionary.`,
-  `\n${SPLIT_EXAMPLES}`,
+  `${SPLIT_WORDS_PROMPT}`,
 ].join(" ");
 
 const TEMPERATURE = 0.2;

@@ -1,6 +1,6 @@
 import { getAIProvider, getProviderType, ModelType } from "@/ai/provider";
 import { CoreMessage as APIMessageType, streamText } from "ai";
-import { PipeBuffer, SPLIT_EXAMPLES } from "./pipebuffer";
+import { PipeBuffer, SPLIT_WORDS_PROMPT } from "./pipebuffer";
 
 const CHAT_SYSTEM_PROMPT = [
   `You're a personal and friendly Mandarin tutor named "铭读老师", talking to a student `,
@@ -12,8 +12,7 @@ const CHAT_SYSTEM_PROMPT = [
   `or they ask for it.`,
   `You respond only in Mandarin, unless absolutely required to explain a concept the student is struggling with,`,
   `and you do not provide translations unless specifically asked.`,
-  `You always split words in your response by pipes ("|"), so the student can more easily look up the words in a dictionary.`,
-  `\n${SPLIT_EXAMPLES}`,
+  `\n${SPLIT_WORDS_PROMPT}`,
 ].join(" ");
 
 const TEMPERATURE = 0.2;

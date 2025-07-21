@@ -33,7 +33,6 @@ const PurePreviewMessage = ({
   const correctionItems = correction?.items ?? [];
   const hasValidCorrection =
     correction && !correction.isLoading && !correction.error;
-  console.debug({ hasValidCorrection, correction });
 
   if (error) {
     return (

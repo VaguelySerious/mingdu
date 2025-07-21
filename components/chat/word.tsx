@@ -13,10 +13,10 @@ const color_examples: Record<string, string> = {
 };
 
 export const Word = ({
-  // id,
+  id,
   // role,
   word,
-  withDictLookup = false,
+  withDictLookup = true,
   withMarkdown = false,
 }: {
   id: string;
@@ -25,27 +25,27 @@ export const Word = ({
   withDictLookup?: boolean;
   withMarkdown?: boolean;
 }) => {
+  const wordContent = (
+    <span className={cn("ml-1 whitespace-nowrap", color_examples[word])}>
+      {word}
+    </span>
+  );
+
   if (withMarkdown) {
     return <Markdown>{word}</Markdown>;
   }
   if (withDictLookup) {
     return (
       <Tooltip>
-        <TooltipTrigger>
-          <span className="ml-1 whitespace-nowrap">{word}</span>
-        </TooltipTrigger>
+        <TooltipTrigger>{wordContent}</TooltipTrigger>
         <TooltipContent>
           {/* TODO: Make this a nicer loading state, like a skeleton of a two-char Mandarin word */}
           <Suspense fallback={<div>...</div>}>
-            <DictionaryEntry word={word} />
+            <DictionaryEntry id={id} word={word} />
           </Suspense>
         </TooltipContent>
       </Tooltip>
     );
   }
-  return (
-    <span className={cn("ml-1 whitespace-nowrap", color_examples[word])}>
-      {word}
-    </span>
-  );
+  return wordContent;
 };

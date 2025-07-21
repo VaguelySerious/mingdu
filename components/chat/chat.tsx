@@ -35,7 +35,6 @@ export default function Chat({ conversationId }: { conversationId: string }) {
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      console.debug("handleSubmit");
       setInput("");
 
       const state = useChatStore.getState();
@@ -74,7 +73,6 @@ export default function Chat({ conversationId }: { conversationId: string }) {
       // TODO: Corrections need to equally be post-split into words, so that the
       // tooltips can use dictionary lookups.
       correctionJsonRequest(selectedModelId, input, (correctionItem) => {
-        console.debug(correctionItem);
         state.addCorrectionItem(correction.id, correctionItem);
       })
         .catch((e) => {
@@ -83,7 +81,6 @@ export default function Chat({ conversationId }: { conversationId: string }) {
           });
         })
         .finally(() => {
-          console.debug("finally");
           state.updateCorrection(correction.id, {
             isLoading: false,
           });
@@ -134,7 +131,6 @@ export default function Chat({ conversationId }: { conversationId: string }) {
           message = e.error.message;
         }
         state.updateMessage(assistantMessage.id, { error: message });
-        console.debug(e);
         setQueryStatus("error");
       }
     },

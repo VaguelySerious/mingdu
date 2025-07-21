@@ -19,12 +19,12 @@ let lastLog: Date | null = null;
 const log = (...args: any[]) => {
   if (!lastLog) {
     lastLog = new Date();
-    console.log(...args);
+    console.debug(...args);
   } else {
     const now = new Date();
     const diff = now.getTime() - lastLog.getTime();
     lastLog = now;
-    console.log(`+${diff}ms`, ...args);
+    console.debug(`+${diff}ms`, ...args);
   }
 };
 
@@ -33,12 +33,16 @@ const _dictData: DictData = {
   grammar: null,
   hsk: null,
 };
+const dictDataPromise = {
+  promise: null as Promise<DictData> | null,
+};
 
-export const loadDictData = async (): Promise<DictData> => {
+const _loadDictData = async (): Promise<DictData> => {
   if (_dictData.dict) {
     return _dictData;
   }
 
+  // TODO: Update to latest Cedict data and new HSK standards
   log("Downloading data...");
   const [dict, grammar, hskLists] = await Promise.all([
     fetch("/data/cedict_ts.u8").then((r) => r.text()),
@@ -97,4 +101,12 @@ export const loadDictData = async (): Promise<DictData> => {
   log("Done");
 
   return _dictData;
+};
+
+export const loadDictData = () => {
+  if (dictDataPromise.promise) {
+    return dictDataPromise.promise;
+  }
+  dictDataPromise.promise = _loadDictData();
+  return dictDataPromise.promise;
 };
