@@ -45,19 +45,19 @@ const CorrectionSpan = ({
       <div className="flex flex-col gap-1">
         <DefaultSpan
           isCorrection
-          className="border-b-2 border-red-500 pb-1"
+          className="border-b-2 border-green-700 pb-1"
           words={words}
           messageKey={messageKey}
         />
         <span className="flex items-center gap-2">
           <DefaultSpan
             isCorrection
-            className="text-red-800"
+            className="text-green-700"
             words={[correction.correction]}
             messageKey={`${messageKey}-correction`}
           />
           <TooltipTrigger>
-            <InfoIcon className="w-4 h-4 text-red-500" />
+            <InfoIcon className="w-4 h-4 text-green-600" />
           </TooltipTrigger>
           <TooltipContent sideOffset={8}>
             <div className="text-white text-xl">{correction.explanation}</div>

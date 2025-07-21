@@ -24,6 +24,7 @@ export const Legend = () => {
             ))}
           </div>
           {/* TODO: Link to definitions */}
+          <div className="h-px bg-border my-2"></div>
           <h4 className="text-sm font-medium text-foreground">HSK Levels:</h4>
           <div className="flex flex-wrap gap-4">
             {Object.entries(HSK_LEVELS_TO_BG_COLORS).map(([level, color]) => (

@@ -6,6 +6,7 @@ import { generateId } from "ai";
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
+import { Legend } from "../help/legend";
 import { ModelPicker } from "../settings/model-picker";
 import { ProfileMenu } from "../settings/profile-menu";
 import { Conversation } from "./conversation";
@@ -104,7 +105,10 @@ export function Sidebar() {
           ))}
         </div>
       </div>
-      <div className="px-2 pb-6">
+      <div className="px-4 pb-6">
+        <Legend />
+      </div>
+      <div className="px-2 py-4 pb-6 border-t border-gray-200 dark:border-gray-800">
         <div className="p-2 flex items-center gap-3 justify-between">
           <div className="flex flex-col">
             <span className="text-sm font-medium">{userName}</span>
