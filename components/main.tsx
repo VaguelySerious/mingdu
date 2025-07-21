@@ -13,9 +13,9 @@ export const Main = () => {
   return (
     <div className="h-dvh flex">
       <NoSSR>
-        <Sidebar />
+        <Sidebar className="h-full" />
         {currentConversationId && (
-          <main className="flex-1">
+          <main className="h-full flex-1">
             <Chat conversationId={currentConversationId} />
           </main>
         )}

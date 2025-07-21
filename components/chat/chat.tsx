@@ -137,7 +137,10 @@ export default function Chat({ conversationId }: { conversationId: string }) {
   );
 
   return (
-    <div className="flex-1 flex flex-col justify-center" key={conversationId}>
+    <div
+      className="h-full overflow-hidden flex-1 flex flex-col justify-center"
+      key={conversationId}
+    >
       <div className="flex items-center justify-center"></div>
       {messageIds.length === 0 ? (
         <div className="max-w-xl mx-auto w-full">

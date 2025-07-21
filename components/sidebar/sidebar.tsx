@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useChatStore } from "@/lib/store";
+import { cn } from "@/lib/utils";
 import { generateId } from "ai";
 import { Plus } from "lucide-react";
 import Image from "next/image";
@@ -11,7 +12,7 @@ import { ModelPicker } from "../settings/model-picker";
 import { ProfileMenu } from "../settings/profile-menu";
 import { Conversation } from "./conversation";
 
-export function Sidebar() {
+export function Sidebar({ className }: { className?: string }) {
   const currentConversationId = useChatStore(
     (state) => state.currentConversationId
   );
@@ -61,7 +62,12 @@ export function Sidebar() {
   }, [currentConversation, updateConversation]);
 
   return (
-    <aside className="w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex flex-col">
+    <aside
+      className={cn(
+        "w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex flex-col",
+        className
+      )}
+    >
       {/* Logo */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center space-x-2">
