@@ -1,6 +1,7 @@
 import { MessageType } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
+import { Spinner } from "../ui/spinner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { DictionaryEntry } from "./dictionary-entry";
 import { Markdown } from "./markdown";
@@ -44,14 +45,21 @@ export const Word = ({
     return (
       <Tooltip>
         <TooltipTrigger>{wordContent}</TooltipTrigger>
-        {/* <TooltipPortal> */}
-        <TooltipContent className="min-w-42">
-          {/* TODO: Make this a nicer loading state, like a skeleton of a two-char Mandarin word */}
-          <Suspense fallback={<div>...</div>}>
+        <TooltipContent
+          className="min-w-42"
+          sideOffset={8}
+          collisionPadding={20}
+        >
+          <Suspense
+            fallback={
+              <div className="flex w-full h-16 items-center justify-center">
+                <Spinner className="text-black" />
+              </div>
+            }
+          >
             <DictionaryEntry id={id} word={word} />
           </Suspense>
         </TooltipContent>
-        {/* </TooltipPortal> */}
       </Tooltip>
     );
   }

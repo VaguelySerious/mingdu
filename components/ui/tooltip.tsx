@@ -44,7 +44,10 @@ function TooltipContent({
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
+        data-scroll-ignore="true"
         sideOffset={sideOffset}
+        collisionPadding={20}
+        avoidCollisions={true}
         className={cn(
           "bg-gray-100 max-w-100 text-black animate-in fade-in-0 zoom-in-95",
           "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
