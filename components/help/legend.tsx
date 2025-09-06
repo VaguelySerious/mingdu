@@ -2,7 +2,8 @@ import {
   HSK_LEVELS_TO_BG_COLORS,
   SKILL_LEVELS_TO_BG_COLORS,
   SKILL_LEVELS_TO_DESCRIPTIONS,
-} from "../skill/levels";
+  SkillLevel,
+} from "../skill/constants";
 
 export const Legend = () => {
   return (
@@ -14,11 +15,15 @@ export const Legend = () => {
           </h4>
           {/* TODO: Hoverable info on what this means */}
           <div className="flex flex-wrap gap-4">
-            {Object.entries(SKILL_LEVELS_TO_BG_COLORS).map(([level, color]) => (
+            {Object.values(SkillLevel).map((level) => (
               <div className="flex items-center gap-2" key={level}>
-                <div className={`w-3 h-3 rounded-full ${color}`}></div>
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    SKILL_LEVELS_TO_BG_COLORS[level as SkillLevel]
+                  }`}
+                ></div>
                 <span className="text-sm text-muted-foreground">
-                  {SKILL_LEVELS_TO_DESCRIPTIONS[Number(level)]}
+                  {SKILL_LEVELS_TO_DESCRIPTIONS[level as SkillLevel]}
                 </span>
               </div>
             ))}

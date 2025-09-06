@@ -1,7 +1,9 @@
 import { defaultModelId, ModelType } from "@/ai/provider";
+import { SkillAlgorithmType } from "@/components/skill/algos";
+import { SkillLevel } from "@/components/skill/constants";
 import { omit } from "lodash-es";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 
 export type ConversationType = {
   id: string;
@@ -48,6 +50,11 @@ interface ChatState {
 
   profile: ProfileType;
 
+  wordLevelOverwrites: Record<string, SkillLevel>;
+  wordReadCounts: Record<string, number>;
+  wordWriteCounts: Record<string, number>;
+  skillAlgorithm: SkillAlgorithmType;
+
   // Settings
   setSelectedModelId: (modelId: ModelType) => void;
   selectConversation: (id: string | null) => void;
@@ -82,6 +89,13 @@ interface ChatState {
 
   // Profile settings
   setProfile: (profile: ProfileType) => void;
+
+  // Word trackers
+  incrementWordReadCounts: (words: string[]) => void;
+  incrementWordWriteCounts: (words: string[]) => void;
+  setWordLevelOverwrites: (
+    wordLevelOverwrites: Record<string, SkillLevel>
+  ) => void;
 }
 
 export const useChatStore = create<ChatState>()(
@@ -95,6 +109,10 @@ export const useChatStore = create<ChatState>()(
       profile: {
         name: "Me",
       },
+      wordLevelOverwrites: {},
+      wordReadCounts: {},
+      wordWriteCounts: {},
+      skillAlgorithm: "v1",
 
       selectConversation: (id: string | null) => {
         set({ currentConversationId: id });
@@ -293,10 +311,33 @@ export const useChatStore = create<ChatState>()(
       setProfile: (profile: ProfileType) => {
         set({ profile });
       },
+
+      incrementWordReadCounts: (words: string[]) => {
+        set((state) => ({
+          wordReadCounts: {
+            ...state.wordReadCounts,
+            ...words.reduce((acc, word) => ({ ...acc, [word]: 1 }), {}),
+          },
+        }));
+      },
+
+      incrementWordWriteCounts: (words: string[]) => {
+        set((state) => ({
+          wordWriteCounts: {
+            ...state.wordWriteCounts,
+            ...words.reduce((acc, word) => ({ ...acc, [word]: 1 }), {}),
+          },
+        }));
+      },
+
+      setWordLevelOverwrites: (
+        wordLevelOverwrites: Record<string, SkillLevel>
+      ) => {
+        set({ wordLevelOverwrites });
+      },
     }),
     {
-      name: "food-storage", // name of the item in the storage (must be unique)
-      storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+      name: "zustand",
     }
   )
 );

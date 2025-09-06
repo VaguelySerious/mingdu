@@ -1,6 +1,7 @@
 "use client";
 
 import { hasAIKey } from "@/ai/provider";
+import { initKnownHSKLevels } from "@/components/skill/init";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,6 +18,14 @@ export function ProfileMenu() {
   const profile = useChatStore((state) => state.profile);
   const setProfile = useChatStore((state) => state.setProfile);
   const [isOpen, setIsOpen] = useState(false);
+  const setWordLevelOverwrites = useChatStore(
+    (state) => state.setWordLevelOverwrites
+  );
+
+  const incrementKnownHSKLevels = async () => {
+    const { wordLevelOverwrites } = await initKnownHSKLevels(5);
+    setWordLevelOverwrites(wordLevelOverwrites);
+  };
 
   const handleChangeName = () => {
     const newName = prompt("Enter your name:", profile.name);
@@ -51,6 +60,13 @@ export function ProfileMenu() {
           Change Name
         </DropdownMenuItem>
         <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => incrementKnownHSKLevels()}
+          className=""
+        >
+          <SettingsIcon className="mr-2 h-4 w-4" />
+          Set current HSK level as known
+        </DropdownMenuItem>
         {/* TODO: Make these into toggle buttons */}
         <DropdownMenuItem
           disabled

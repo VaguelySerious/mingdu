@@ -1,6 +1,8 @@
 import { MessageType } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { Suspense } from "react";
+import { SKILL_LEVELS_TO_COLORS } from "../skill/constants";
+import { useSkillLevel } from "../skill/use-skill";
 import { Spinner } from "../ui/spinner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { DictionaryEntry } from "./dictionary-entry";
@@ -9,13 +11,6 @@ import { Markdown } from "./markdown";
 const chineseRegex = /[\u4E00-\u9FFF]/;
 // const japaneseRegex = /[\u3040-\u30FF\u31F0-\u31FF\uFF00-\uFFEF]/;
 // const koreanRegex = /[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF]/;
-
-const color_examples: Record<string, string> = {
-  独轮车: "text-red-500",
-  电动: "text-orange-500",
-  铭读: "text-orange-500",
-  一般: "text-yellow-500",
-};
 
 export const Word = ({
   id,
@@ -31,10 +26,24 @@ export const Word = ({
   // withDictLookup?: boolean;
   withMarkdown?: boolean;
 }) => {
+  const { level } = useSkillLevel(word);
+
+  // TODO: Left-off
+  // For one, we color items that aren't actually in the dictionary.
+  // We should generally only allow skill measurement for words in the dictionary.
+  // This might require pre-initializing the levels for each dictionary item,
+  // in the same code that initializes the HSK levels on init,
+  // and then do not color or do anything if the item can't be found in the skill
+  // list.
+
+  // TODO: Secondly, rehydrating zustand doesn't correctly set the "hydrated" flag.
+  // I removed this and instead check a predefined word for its level in the store,
+  // but not sure if that triggers correctly.
+
+  const textColor =
+    level !== undefined ? SKILL_LEVELS_TO_COLORS[level] : undefined;
   const wordContent = (
-    <span
-      className={cn("ml-1 whitespace-nowrap", className, color_examples[word])}
-    >
+    <span className={cn("ml-1 whitespace-nowrap", className, textColor)}>
       {word}
     </span>
   );

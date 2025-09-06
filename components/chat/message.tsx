@@ -96,9 +96,7 @@ const PurePreviewMessage = ({
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <div className="text-white">
-                      What you said sounded natural!
-                    </div>
+                    <div>What you said sounded natural!</div>
                   </TooltipContent>
                 </Tooltip>
               )}

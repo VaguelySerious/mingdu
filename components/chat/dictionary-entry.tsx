@@ -1,6 +1,8 @@
 import { loadDictData } from "@/lib/dictionary";
 import { use } from "react";
 import { HSKLevelBadge } from "../skill/HSKBadge";
+import { SkillLevelBadge } from "../skill/SkillBadge";
+import { useSkillLevel } from "../skill/use-skill";
 
 type DictEntryMapType = {
   word: string;
@@ -46,6 +48,8 @@ const WordEntry = ({
 }) => {
   // TODO: Toggle for simplified or traditional Chinese characters
   const definitions = entryMap.definitions;
+  const { level, read, write } = useSkillLevel(word);
+
   return (
     <div className="flex items-start justify-between relative w-full">
       <div className="flex flex-col gap-2 w-full">
@@ -62,11 +66,10 @@ const WordEntry = ({
         ))}
       </div>
 
-      {entryMap.hskLevel && (
-        <div className="absolute right-0 top-0">
-          <HSKLevelBadge level={entryMap.hskLevel} />
-        </div>
-      )}
+      <div className="absolute right-0 top-0">
+        <SkillLevelBadge level={level} read={read} write={write} />
+        {entryMap.hskLevel && <HSKLevelBadge level={entryMap.hskLevel} />}
+      </div>
     </div>
   );
 };
