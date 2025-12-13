@@ -1,5 +1,6 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
+import { type LanguageModelV2 } from "@ai-sdk/provider";
 
 export type ProviderType = "openai" | "anthropic";
 
@@ -73,7 +74,10 @@ export const setAIKey = (provider: "openai" | "anthropic", key: string) => {
   }
 };
 
-export const getAIProvider = (provider: ProviderType, modelId?: ModelType) => {
+export const getAIProvider = (
+  provider: ProviderType,
+  modelId?: ModelType
+): LanguageModelV2 => {
   if (provider === "openai") {
     return createOpenAI({
       apiKey: getOrPromptAIKey("openai") ?? "",
