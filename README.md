@@ -2,6 +2,8 @@
 
 A Mandarin tutor chatbot that tracks which words you know, and which you don't, and corrects your mistakes in unobtrusive ways. Practicing Mandarin at an intermediary+ level has never been this easy!
 
+
+
 <img width="890" height="853" alt="grafik" src="https://github.com/user-attachments/assets/2f72eb6a-2180-4114-a219-cf837b3692fe" />
 
 ## Possible sources
