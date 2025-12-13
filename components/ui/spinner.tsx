@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 export const Spinner = ({ className }: { className?: string }) => (
   <div className={cn("animate-spin h-4 w-4", className)}>
-    <svg className="h-4 w-4 text-white" viewBox="0 0 24 24">
+    <svg className="h-4 w-4 text-black" viewBox="0 0 24 24">
       <circle
         className="opacity-25"
         cx="12"

@@ -1,22 +1,41 @@
 import type { CorrectionType } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { InfoIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Word } from "./word";
 
 const DefaultSpan = ({
   words,
   messageKey,
+  isCorrection,
   className,
+  isOnlySpan,
 }: {
   words: string[];
   messageKey: string;
   className?: string;
+  isCorrection?: boolean;
+  isOnlySpan?: boolean;
 }) => {
   return (
-    <div className={cn("flex flex-wrap", className)}>
+    <div
+      className={cn(
+        "text-xl flex flex-wrap",
+        isCorrection ? "cursor-pointer" : "pb-1",
+        className
+      )}
+    >
       {words.map((word, i) => {
         const wordKey = `${messageKey}-word-${i}`;
-        return <Word role="user" id={wordKey} key={wordKey} word={word} />;
+        return (
+          <Word
+            role="user"
+            id={wordKey}
+            key={wordKey}
+            word={word}
+            className={isOnlySpan ? "whitespace-pre-wrap" : ""}
+          />
+        );
       })}
     </div>
   );
@@ -33,21 +52,28 @@ const CorrectionSpan = ({
 }) => {
   return (
     <Tooltip>
-      <TooltipTrigger>
+      <div className="flex flex-col gap-1">
         <DefaultSpan
+          isCorrection
+          className="border-b-2 border-green-700 pb-1"
           words={words}
           messageKey={messageKey}
-          className="p-1 flex flex-wrap border-b-2 border-pink-500 cursor-pointer"
         />
-      </TooltipTrigger>
-      <TooltipContent sideOffset={8}>
-        <div className="max-w-xs text-xs">
-          <div className="font-bold mb-1 text-green-600">
-            修正: {correction.correction}
-          </div>
-          <div className="text-white">{correction.explanation}</div>
-        </div>
-      </TooltipContent>
+        <span className="flex items-center gap-2">
+          <DefaultSpan
+            isCorrection
+            className="text-green-700"
+            words={[correction.correction]}
+            messageKey={`${messageKey}-correction`}
+          />
+          <TooltipTrigger>
+            <InfoIcon className="w-4 h-4 text-green-600" />
+          </TooltipTrigger>
+          <TooltipContent sideOffset={8}>
+            <div className="text-white text-xl">{correction.explanation}</div>
+          </TooltipContent>
+        </span>
+      </div>
     </Tooltip>
   );
 };
@@ -56,10 +82,12 @@ export const WordSpan = ({
   words,
   messageKey,
   correction,
+  isOnlySpan,
 }: {
   words: string[];
   messageKey: string;
   correction?: CorrectionType["items"][number];
+  isOnlySpan?: boolean;
 }) => {
   if (correction) {
     return (
@@ -70,5 +98,11 @@ export const WordSpan = ({
       />
     );
   }
-  return <DefaultSpan words={words} messageKey={messageKey} />;
+  return (
+    <DefaultSpan
+      isOnlySpan={isOnlySpan}
+      words={words}
+      messageKey={messageKey}
+    />
+  );
 };

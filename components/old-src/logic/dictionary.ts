@@ -1,5 +1,5 @@
-import { createContext } from "react";
 import pinyinTool from "pinyin-tone";
+import { createContext } from "react";
 
 export type WordDictData = Record<
   string,
@@ -8,9 +8,9 @@ export type WordDictData = Record<
 export type HSKDictData = Record<string, number>;
 export type GrammarDictData = Record<string, boolean>;
 export type DictData = {
-  wordDict: WordDictData;
-  hskDict: HSKDictData;
-  grammarDict: GrammarDictData;
+  dict: WordDictData | null;
+  hsk: HSKDictData | null;
+  grammar: GrammarDictData | null;
 };
 
 export const DictContext = createContext(null as DictData | null);
@@ -28,7 +28,17 @@ const log = (...args: any[]) => {
   }
 };
 
+const _dictData: DictData = {
+  dict: null,
+  grammar: null,
+  hsk: null,
+};
+
 export const loadDictData = async (): Promise<DictData> => {
+  if (_dictData.dict) {
+    return _dictData;
+  }
+
   log("Downloading data...");
   const [dict, grammar, hskLists] = await Promise.all([
     fetch("/data/cedict_ts.u8").then((r) => r.text()),
@@ -77,17 +87,14 @@ export const loadDictData = async (): Promise<DictData> => {
       return acc;
     }, {} as WordDictData);
 
-  (window as any).wordDict = wordDict;
-  (window as any).hskDict = hskDict;
+  _dictData.dict = wordDict;
+  _dictData.hsk = hskDict;
+  _dictData.grammar = grammar.split(",").reduce((acc, cur) => {
+    acc[cur] = true;
+    return acc;
+  }, {} as Record<string, boolean>);
 
   log("Done");
 
-  return {
-    wordDict,
-    hskDict,
-    grammarDict: grammar.split(",").reduce((acc, cur) => {
-      acc[cur] = true;
-      return acc;
-    }, {} as Record<string, boolean>),
-  };
+  return _dictData;
 };

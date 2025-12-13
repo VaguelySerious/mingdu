@@ -1,10 +1,16 @@
-export const SPLIT_EXAMPLES = [
+export const SPLIT_WORDS_PROMPT = [
+  `You always split words in your response by pipes ("|"), so the student can more easily look up the words in a dictionary.`,
+  `For any non-Mandarin text chunk, you return words as-is following original whitespace, e.g. splitting on spaces`,
+  `for romanized text, e.g. "你好 my name is John" should be split into "你好|my|name|is|John".`,
+  `Remember the point is to split words in a way where every word can be looked up in a regular dictionary,`,
+  `so don't chunk proper nouns into single characters unless they're common words.`,
   `Examples for responses given user input:`,
   `"我觉得今天的天气很好，但是有点热" -> 我|觉得|今天|的|天气|很|好|，|但是|有点|热|。`,
   `"你好，我叫约翰" -> 你好|，|我|叫|约翰`,
   `"谢谢你" -> 谢谢|你`,
-  `"我今天很开心" -> 我|今天|很|开心|。`,
+  `"我今天很开心。你呢？" -> 我|今天|很|开心|。|你|呢|？`,
   `"我很高兴认识你" -> 我|很|高兴|认识|你`,
+  `铭读老师 -> 铭读|老师`,
 ].join("\n");
 
 export class PipeBuffer {

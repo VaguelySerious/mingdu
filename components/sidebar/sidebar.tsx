@@ -2,14 +2,17 @@
 
 import { Button } from "@/components/ui/button";
 import { useChatStore } from "@/lib/store";
+import { cn } from "@/lib/utils";
 import { generateId } from "ai";
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
+import { Legend } from "../help/legend";
 import { ModelPicker } from "../settings/model-picker";
+import { ProfileMenu } from "../settings/profile-menu";
 import { Conversation } from "./conversation";
 
-export function Sidebar() {
+export function Sidebar({ className }: { className?: string }) {
   const currentConversationId = useChatStore(
     (state) => state.currentConversationId
   );
@@ -19,6 +22,7 @@ export function Sidebar() {
   const currentConversation = conversations.find(
     (c) => c.id === currentConversationId
   );
+  const userName = useChatStore((state) => state.profile.name);
 
   const selectConversation = useChatStore((state) => state.selectConversation);
   const onNewConversation = useChatStore((state) => state.createConversation);
@@ -42,11 +46,18 @@ export function Sidebar() {
   };
 
   useEffect(() => {
+    if (conversations.length === 0 && !currentConversation) {
+      handleNewConversation();
+    }
+  }, [conversations, handleNewConversation]);
+
+  useEffect(() => {
     if (
       currentConversation &&
       currentConversation.messageIds.length >= 1 &&
       !currentConversation.title
     ) {
+      // TODO: Re-compute from time to time with a small summary AI query
       const message =
         useChatStore.getState().messages[currentConversation.messageIds[0]];
       const content = message.words.join("");
@@ -58,7 +69,12 @@ export function Sidebar() {
   }, [currentConversation, updateConversation]);
 
   return (
-    <aside className="w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex flex-col">
+    <aside
+      className={cn(
+        "w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 h-screen flex flex-col",
+        className
+      )}
+    >
       {/* Logo */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center space-x-2">
@@ -102,7 +118,23 @@ export function Sidebar() {
           ))}
         </div>
       </div>
-      <ModelPicker />
+      <div className="px-4 pb-6">
+        <Legend />
+      </div>
+      <div className="px-2 py-4 pb-6 border-t border-gray-200 dark:border-gray-800">
+        <div className="p-2 flex items-center gap-3 justify-between">
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">{userName}</span>
+            <span className="text-xs text-muted-foreground">
+              HSK 3 progress: 60%
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <ProfileMenu />
+          </div>
+        </div>
+        <ModelPicker />
+      </div>
     </aside>
   );
 }

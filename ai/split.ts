@@ -1,15 +1,12 @@
 import { getAIProvider, getProviderType, ModelType } from "@/ai/provider";
 import { streamText } from "ai";
-import { PipeBuffer, SPLIT_EXAMPLES } from "./pipebuffer";
+import { PipeBuffer, SPLIT_WORDS_PROMPT } from "./pipebuffer";
 
 const SPLIT_SYSTEM_PROMPT = [
   `You're a Mandarin language model, designed to parse text into separate words.`,
   `You only respond to Mandarin text, and you answer with the same Mandarin text, split into individual words.`,
-  `You always split words in your response by pipes ("|").`,
-  `For any non-Mandarin text chunk, you return words as-is following original whitespace, e.g. splitting on spaces`,
-  `for romanized text, e.g. "你好 my name is John" should be split into "你好|my|name|is|John".`,
-  `\n${SPLIT_EXAMPLES}`,
-].join(" ");
+  `${SPLIT_WORDS_PROMPT}`,
+].join("\n");
 
 const TEMPERATURE = 0;
 
@@ -25,6 +22,8 @@ export const splitTextRequest = (
       const { textStream } = streamText({
         model: getAIProvider(provider, modelId),
         system: SPLIT_SYSTEM_PROMPT,
+        // TODO: Pass in all previous messages, so the model can see the context,
+        // and make sure it's cached by IDs
         messages: [{ role: "user", content: inputMessage }],
         temperature: TEMPERATURE,
         onError: (error) => {

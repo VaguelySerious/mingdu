@@ -2,6 +2,10 @@
 
 A Mandarin tutor chatbot that tracks which words you know, and which you don't, and corrects your mistakes in unobtrusive ways. Practicing Mandarin at an intermediary+ level has never been this easy!
 
+
+
+<img width="890" height="853" alt="grafik" src="https://github.com/user-attachments/assets/2f72eb6a-2180-4114-a219-cf837b3692fe" />
+
 ## Possible sources
 
 [NPM chinese-lexicon](https://www.npmjs.com/package/chinese-lexicon)
@@ -10,3 +14,4 @@ ChineseGrammarWiki: [keywords to grammar](https://resources.allsetlearning.com/c
 ChineseGrammarWiki: [english to grammar](https://resources.allsetlearning.com/chinese/grammar/Translations)
 [Blog on words with different pinyin pronunciations](https://blog.tutorabcchinese.com/mandarin-chinese-learning-tips/chinese-characters-with-various-pronunciations)
 [ZEN machine learning model for word segregation](https://github.com/sinovation/ZEN/tree/master/examples)
+

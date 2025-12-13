@@ -2,14 +2,7 @@
 
 import { chatTextRequest } from "@/ai/chat";
 import { correctionJsonRequest } from "@/ai/correction-json";
-import { ModelType } from "@/ai/provider";
-import {
-  generateRecipeRequest,
-  streamRecipeArrayRequest,
-  streamRecipeRequest,
-} from "@/ai/recipe";
 import { splitTextRequest } from "@/ai/split";
-import { Button } from "@/components/ui/button";
 import { sendSignal, SIGNAL_TOPICS } from "@/lib/hooks/use-signals";
 import { CorrectionType, MessageType, useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
@@ -41,7 +34,6 @@ export default function Chat({ conversationId }: { conversationId: string }) {
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      console.debug("handleSubmit");
       setInput("");
 
       const state = useChatStore.getState();
@@ -77,18 +69,19 @@ export default function Chat({ conversationId }: { conversationId: string }) {
         isLoading: true,
       };
       state.addCorrection(correction);
+      // TODO: Corrections need to equally be post-split into words, so that the
+      // tooltips can use dictionary lookups.
       correctionJsonRequest(selectedModelId, input, (correctionItem) => {
-        console.debug(correctionItem);
         state.addCorrectionItem(correction.id, correctionItem);
       })
-        .then(() => {
-          state.updateCorrection(correction.id, {
-            isLoading: false,
-          });
-        })
         .catch((e) => {
           state.updateCorrection(correction.id, {
             error: e.message,
+          });
+        })
+        .finally(() => {
+          state.updateCorrection(correction.id, {
+            isLoading: false,
           });
         });
 
@@ -103,6 +96,7 @@ export default function Chat({ conversationId }: { conversationId: string }) {
 
       const promptMessages: APIMessageType[] = [...messages, userMessage].map(
         (message) => ({
+          id: message.id,
           role: message.role,
           content: message.words.join(""),
         })
@@ -136,7 +130,6 @@ export default function Chat({ conversationId }: { conversationId: string }) {
           message = e.error.message;
         }
         state.updateMessage(assistantMessage.id, { error: message });
-        console.debug(e);
         setQueryStatus("error");
       }
     },
@@ -144,7 +137,10 @@ export default function Chat({ conversationId }: { conversationId: string }) {
   );
 
   return (
-    <div className="flex-1 flex flex-col justify-center" key={conversationId}>
+    <div
+      className="h-full overflow-hidden flex-1 flex flex-col justify-center"
+      key={conversationId}
+    >
       <div className="flex items-center justify-center"></div>
       {messageIds.length === 0 ? (
         <div className="max-w-xl mx-auto w-full">
@@ -164,7 +160,7 @@ export default function Chat({ conversationId }: { conversationId: string }) {
           stop={stop}
         />
       </form>
-      {[ModelType.CLAUDE_3_5_HAIKU, ModelType.GPT_4_1_NANO].map((modelId) => (
+      {/* {[ModelType.CLAUDE_3_5_HAIKU, ModelType.GPT_4_1_NANO].map((modelId) => (
         <div
           className="flex gap-2 mx-auto items-center justify-center mb-2"
           key={modelId}
@@ -191,7 +187,7 @@ export default function Chat({ conversationId }: { conversationId: string }) {
             Stream Recipe Array ({modelId.slice(0, 6)})
           </Button>
         </div>
-      ))}
+      ))} */}
     </div>
   );
 }

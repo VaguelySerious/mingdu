@@ -7,8 +7,9 @@ import { wordsAndCorrectionsToSpans } from "@/lib/arrayspan";
 import { useChatStore } from "@/lib/store";
 import { QueryStatusType } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { SparklesIcon } from "lucide-react";
+import { CheckCircleIcon, SparklesIcon } from "lucide-react";
 import { Spinner } from "../ui/spinner-alternative";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { WordSpan } from "./wordspan";
 
 const PurePreviewMessage = ({
@@ -30,6 +31,8 @@ const PurePreviewMessage = ({
     Object.values(state.corrections).find((c) => c.messageId === id)
   );
   const correctionItems = correction?.items ?? [];
+  const hasValidCorrection =
+    correction && !correction.isLoading && !correction.error;
 
   if (error) {
     return (
@@ -71,7 +74,7 @@ const PurePreviewMessage = ({
           >
             <div
               id={id}
-              className={cn("flex flex-wrap gap-1 items-center", {
+              className={cn("flex flex-wrap gap-4 items-start", {
                 "bg-secondary text-secondary-foreground px-3 py-2 rounded-tl-xl rounded-tr-xl rounded-bl-xl":
                   role === "user",
               })}
@@ -80,10 +83,23 @@ const PurePreviewMessage = ({
                 <WordSpan
                   key={`${messageKey}-span-${i}`}
                   words={span.words}
+                  isOnlySpan={spans.length === 1}
                   messageKey={`${messageKey}-span-${i}`}
                   correction={span.correction}
                 />
               ))}
+              {hasValidCorrection && !correctionItems.length && (
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div className="text-green-500 p-1">
+                      <CheckCircleIcon size={24} />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div>What you said sounded natural!</div>
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </div>
           </motion.div>
 
